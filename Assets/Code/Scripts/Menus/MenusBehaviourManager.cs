@@ -8,25 +8,28 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 public enum MenuType{MainMenu, PauseMenu}
-public enum InputType{Keyboard, Mouse, Automatic}
+public enum InputType{Keyboard, Mouse, Gamepad, Automatic}
 public class MenusBehaviourManager : MonoBehaviour
 {
     [Header("Settings")]
     public MenuType _menuType;
     public InputType _inputType;
+    private InputType previousInputType;
     
     [Header("Input")]
     private PlayerInput playerInput;
     private bool mouseState;
     private bool mouseByPass;
     private bool isMouseVisible;
+    private float inputSwitchCooldown = 0.5f; // Tiempo mínimo entre detecciones
+    private float lastInputSwitchTime;
 
     [Header("Menus, Animators y Botones")]
     public List<GameObject> Menus;
     private List<Animator> MenusAnimators = new List<Animator>();
     private List<List<GameObject>> ButtonsMenus = new List<List<GameObject>>();
     private Dictionary<string, int> menuIndexLookup;
-
+    private Dictionary<GameObject, GameObject> lastSelectedButtons = new Dictionary<GameObject, GameObject>();
     private void Awake()
     {
         GameObject inputManager = GameObject.Find("InputManager");
@@ -86,6 +89,7 @@ public class MenusBehaviourManager : MonoBehaviour
 
     private void Start()
     {
+        LogAvailableControlSchemes();
         Close_Charge();
         if(_inputType == InputType.Keyboard)
         {
@@ -103,6 +107,37 @@ public class MenusBehaviourManager : MonoBehaviour
 
     private void Update()
     {
+        // 1. Gestión del estado del juego y pausa
+        HandlePause();
+
+        // 2. Verificar si el mouse está dentro de la pantalla
+        if (GameManager.Instance._gameState == GameStates.Pause || _menuType == MenuType.MainMenu)
+        {
+            mouseState = !IsPointerOverScreen();
+
+            if (_inputType == InputType.Automatic)
+            {
+                alternateButtons();
+                alternateMouseVisibility();
+            }
+        }
+
+        // 3. Detectar cambios manuales en el modo de entrada
+        if (_inputType != previousInputType)
+        {
+            ConfigureInputMode(); // Configurar comportamiento según el nuevo modo
+            previousInputType = _inputType; // Actualizar el modo previo
+        }
+
+        // 4. Detectar dispositivo activo en modo automático
+        if (_inputType == InputType.Automatic)
+        {
+            DetectInputDevice(); // Detectar si se está usando mouse, teclado o mando
+        }
+    }
+
+    private void HandlePause()
+    {
         if (InputManager.GetInstance().GetPausePressed() && _menuType == MenuType.PauseMenu)
         {
             if (GameManager.Instance._gameState == GameStates.Pause)
@@ -114,37 +149,35 @@ public class MenusBehaviourManager : MonoBehaviour
                 PauseGame();
             }
         }
-        
-        if (GameManager.Instance._gameState == GameStates.Pause || _menuType == MenuType.MainMenu)
-        {
-            //mouseState = EventSystem.current.IsPointerOverGameObject();
-            if (IsPointerOverScreen())
-            {
-                // Pointer is over the screen
-                mouseState = false;
-            }
-            else
-            {
-                // Pointer is not over the screen
-                mouseState = true;
-            }
-
-            if(_inputType == InputType.Automatic)
-            {
-                alternateButtons();
-                alternateMouseVisibility();
-            }
-        }
     }
-
     private bool IsPointerOverScreen()
     {
-        // Get the mouse position
         Vector2 mousePosition = Mouse.current.position.ReadValue();
 
-        // Check if the mouse position is within the screen bounds
-        return mousePosition.x >= 0 && mousePosition.x <= Screen.width &&
-            mousePosition.y >= 0 && mousePosition.y <= Screen.height;
+        // Verificar si el mouse está dentro de los límites de la pantalla
+        bool isInsideScreen = mousePosition.x >= 0 && mousePosition.x <= Screen.width &&
+                            mousePosition.y >= 0 && mousePosition.y <= Screen.height;
+
+        if (!isInsideScreen) return false;
+
+        // Verificar si está sobre un botón o slider
+        PointerEventData pointerData = new PointerEventData(EventSystem.current)
+        {
+            position = mousePosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
+
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject.GetComponent<Button>() != null || result.gameObject.GetComponent<Slider>() != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     void OnGUI()
@@ -194,12 +227,12 @@ public class MenusBehaviourManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"MenuAIndex {MenuAIndex} is out of range.");
+                Debug.Log($"MenuAIndex {MenuAIndex} is out of range.");
             }
         }
         else
         {
-            Debug.LogWarning($"MenuActivate with name {IgnitedMenu.name} not found in menuIndexLookup.");
+            Debug.Log($"MenuActivate with name {IgnitedMenu.name} not found in menuIndexLookup.");
         }
 
         if (MenuA != null)
@@ -216,21 +249,27 @@ public class MenusBehaviourManager : MonoBehaviour
 
     public void MenuTransition(GameObject MenuActivate)
     {
+        CleanLastSelectedButtons(); // Limpiar botones obsoletos al hacer la transición.
+
         // Obtener el botón que activó la transición
         GameObject currentButton = GetCurrentButton();
         if (currentButton == null)
         {
-            Debug.LogWarning("No button selected.");
+            Debug.Log("No button selected.");
             return;
         }
 
         // Encontrar el MenuDeactivate correspondiente basado en el botón actual
         GameObject MenuDeactivate = FindMenuDeactivateFromButton(currentButton);
 
-        if (MenuDeactivate == null)
+        if (MenuDeactivate != null)
         {
-            Debug.LogWarning("MenuDeactivate could not be found.");
-            return;
+            GameObject lastButton = EventSystem.current.currentSelectedGameObject;
+            if (lastButton != null)
+            {
+                lastSelectedButtons[MenuDeactivate] = lastButton;
+                Debug.Log($"Saved last selected button: {lastButton.name}");
+            }
         }
 
         // Obtener los animadores para ambos menús
@@ -246,12 +285,12 @@ public class MenusBehaviourManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"MenuAIndex {MenuAIndex} is out of range.");
+                Debug.Log($"MenuAIndex {MenuAIndex} is out of range.");
             }
         }
         else
         {
-            Debug.LogWarning($"MenuActivate with name {MenuActivate.name} not found in menuIndexLookup.");
+            Debug.Log($"MenuActivate with name {MenuActivate.name} not found in menuIndexLookup.");
         }
 
         int MenuBIndex;
@@ -263,12 +302,12 @@ public class MenusBehaviourManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"MenuBIndex {MenuBIndex} is out of range.");
+                Debug.Log($"MenuBIndex {MenuBIndex} is out of range.");
             }
         }
         else    
         {
-            Debug.LogWarning($"MenuDeactivate with name {MenuDeactivate.name} not found in menuIndexLookup.");
+            Debug.Log($"MenuDeactivate with name {MenuDeactivate.name} not found in menuIndexLookup.");
         }
 
         // Llamar a la corrutina de transición con animaciones si se encuentran animadores
@@ -294,10 +333,14 @@ public class MenusBehaviourManager : MonoBehaviour
         // Encontrar el MenuDeactivate correspondiente basado en el botón actual
         GameObject MenuDeactivate = MenuDeactivat;
 
-        if (MenuDeactivate == null)
+        if (MenuDeactivate != null)
         {
-            Debug.LogError("MenuDeactivate could not be found.");
-            return;
+            GameObject lastButton = EventSystem.current.currentSelectedGameObject;
+            if (lastButton != null)
+            {
+                lastSelectedButtons[MenuDeactivate] = lastButton;
+                Debug.Log($"Saved last selected button: {lastButton.name}");
+            }
         }
 
         // Obtener los animadores para ambos menús
@@ -379,21 +422,24 @@ public class MenusBehaviourManager : MonoBehaviour
         return null;
     }
 
+
+
     private GameObject FindMenuDeactivateFromButton(GameObject button)
     {
         foreach (var menu in Menus)
         {
-            int menuIndex = menuIndexLookup[menu.name];
-            List<GameObject> buttons = ButtonsMenus[menuIndex];
-            
-            if (buttons.Contains(button))
+            if (menuIndexLookup.TryGetValue(menu.name, out int menuIndex) && menuIndex < ButtonsMenus.Count)
             {
-                Debug.Log($"Menu to deactivate found: {menu.name}");
-                return menu;
+                List<GameObject> buttons = ButtonsMenus[menuIndex];
+                if (buttons.Contains(button))
+                {
+                    Debug.Log($"Menu to deactivate found: {menu.name}");
+                    return menu;
+                }
             }
         }
 
-        Debug.LogError("MenuDeactivate could not be found.");
+        Debug.Log("MenuDeactivate could not be found.");
         return null;
     }
 
@@ -480,42 +526,55 @@ public class MenusBehaviourManager : MonoBehaviour
     {
         playerInput.actions.Disable();
 
-        // Ejemplo de animación simple con DOTween
+        // Activar el menú
         MenuActivate.SetActive(true);
 
-        // Configura la animación de DOTween aquí
-        // Puedes ajustar los valores según la animación deseada
+        // Configura una animación simple con DOTween (si es necesario)
         MenuActivate.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutQuad);
 
         yield return new WaitForSeconds(0.5f);
-        
-        GameObject firstButton = GetFirstButton(MenuActivate);
-        EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(firstButton);
-        
+
+        // Seleccionar el primer botón en el menú activado
+        if (_inputType != InputType.Mouse)
+        {
+            GameObject firstButton = GetFirstButton(MenuActivate);
+            if (firstButton != null)
+            {
+                EventSystem.current.SetSelectedGameObject(null);
+                EventSystem.current.SetSelectedGameObject(firstButton);
+                Debug.Log($"Selected first button: {firstButton.name}");
+            }
+            else
+            {
+                Debug.Log("No buttons found in the active menu.");
+            }
+        }
+
         playerInput.actions.Enable();
     }
+
 
     private IEnumerator DOTweenTransition(GameObject MenuActivate, GameObject MenuDeactivate)
     {
         playerInput.actions.Disable();
 
-        // Ejemplo de animación simple con DOTween
+        // Activar y desactivar menús con animaciones de escala
         MenuActivate.SetActive(true);
-
-        // Configura la animación de DOTween aquí
-        // Puedes ajustar los valores según la animación deseada
         MenuActivate.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutQuad);
-        MenuDeactivate.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutQuad);
 
-        yield return new WaitForSeconds(0.5f);
+        if (MenuDeactivate != null)
+        {
+            MenuDeactivate.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutQuad);
+            yield return new WaitForSeconds(0.5f);
+            MenuDeactivate.SetActive(false);
+        }
 
-        MenuDeactivate.SetActive(false);
-        
-        GameObject firstButton = GetFirstButton(MenuActivate);
-        EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(firstButton);
-        
+        // Seleccionar el primer botón del menú activado
+        if (_inputType != InputType.Mouse)
+        {
+            SelectFirstButtonInActiveMenu();
+        }
+
         playerInput.actions.Enable();
     }
 
@@ -574,10 +633,10 @@ public class MenusBehaviourManager : MonoBehaviour
     {
     #if UNITY_WEBGL
             Time.timeScale = 1f;
-            SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene("MainMenu_WEB");
     #elif UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
             Time.timeScale = 1f;
-            SceneManager.LoadScene("MainMenuPC");
+            SceneManager.LoadScene("MainMenu_PC");
     #endif
     }
     public void ChangeScene(string n)
@@ -599,6 +658,14 @@ public class MenusBehaviourManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void ExitGame()
+    {
+        #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
+            Application.Quit(); 
+        #endif
+        
     }
 
     public GameObject AccessInnerList(int outerIndex, int innerIndex)
@@ -627,7 +694,7 @@ public class MenusBehaviourManager : MonoBehaviour
 
     public void alternateButtons()
     {
-        if (mouseState)
+        if (mouseState && (_inputType == InputType.Mouse || _inputType == InputType.Automatic))
         {
             EventSystem.current.SetSelectedGameObject(null);
             mouseByPass = true;
@@ -636,13 +703,19 @@ public class MenusBehaviourManager : MonoBehaviour
         {
             foreach (var menu in Menus)
             {
-                int i = Menus.IndexOf(menu);
-                if (menu.activeSelf)
+                int menuIndex;
+                if (menu.activeSelf && menuIndexLookup.TryGetValue(menu.name, out menuIndex))
                 {
-                    GameObject button = AccessInnerList(i, 0);
-                    if (button != null)
+                    if (menuIndex < ButtonsMenus.Count)
                     {
-                        EventSystem.current.SetSelectedGameObject(button);
+                        List<GameObject> menuButtons = ButtonsMenus[menuIndex];
+                        if (menuButtons.Count > 0)
+                        {
+                            GameObject firstButton = menuButtons[0];
+                            EventSystem.current.SetSelectedGameObject(null);
+                            EventSystem.current.SetSelectedGameObject(firstButton);
+                            Debug.Log($"Button selected: {firstButton.name}");
+                        }
                     }
                 }
             }
@@ -652,20 +725,19 @@ public class MenusBehaviourManager : MonoBehaviour
 
     private void alternateMouseVisibility()
     {
-        if (GameManager.Instance._gameState == GameStates.Pause)
+        if (_inputType == InputType.Automatic || _inputType == InputType.Mouse)
         {
-            if (Input.anyKeyDown && !Input.GetMouseButtonDown(0))
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-                isMouseVisible = false;
-            }
-
-            if (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0 || Input.GetMouseButtonDown(0))
+            if (Mouse.current != null && Mouse.current.delta.ReadValue() != Vector2.zero)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
                 isMouseVisible = true;
+            }
+            else if (Keyboard.current.anyKey.isPressed || (Gamepad.current != null && Gamepad.current.wasUpdatedThisFrame))
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                isMouseVisible = false;
             }
         }
         else
@@ -675,4 +747,138 @@ public class MenusBehaviourManager : MonoBehaviour
             isMouseVisible = false;
         }
     }
+
+
+    private void ConfigureInputMode()
+{
+    switch (_inputType)
+    {
+        case InputType.Mouse:
+            SetControlScheme("MouseControls");
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            isMouseVisible = true;
+            EventSystem.current.SetSelectedGameObject(null); // Desseleccionar cualquier objeto para evitar conflictos.
+            break;
+
+        case InputType.Keyboard:
+            SetControlScheme("KeyboardControls");
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            isMouseVisible = false;
+            SelectFirstButtonInActiveMenu(); // Seleccionar el primer botón visible en el menú activo.
+            break;
+
+        case InputType.Gamepad:
+            SetControlScheme("GamepadControls");
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            isMouseVisible = false;
+            SelectFirstButtonInActiveMenu(); // Seleccionar el primer botón visible en el menú activo.
+            break;
+
+        case InputType.Automatic:
+            SetControlScheme("AutomaticControls");
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            isMouseVisible = true;
+            EventSystem.current.SetSelectedGameObject(null); // Mantén la detección automática activa.
+            break;
+    }
+    Debug.Log($"Input mode configured: {_inputType}");
+    }
+
+    private void SetControlScheme(string controlScheme)
+    {
+        try
+        {
+            playerInput.SwitchCurrentControlScheme(controlScheme);
+            Debug.Log($"Switched to control scheme: {controlScheme}");
+        }
+        catch
+        {
+            Debug.LogError($"Control Scheme '{controlScheme}' not found or not configured.");
+        }
+    }
+
+    private void DetectInputDevice()
+    {
+        if (Time.time - lastInputSwitchTime < inputSwitchCooldown)
+            return;
+
+        if (Mouse.current.delta.ReadValue() != Vector2.zero)
+        {
+            SwitchInputType(InputType.Mouse);
+        }
+        else if (Keyboard.current.anyKey.wasPressedThisFrame)
+        {
+            SwitchInputType(InputType.Keyboard);
+        }
+        else if (Gamepad.current != null && Gamepad.current.wasUpdatedThisFrame)
+        {
+            SwitchInputType(InputType.Gamepad);
+        }
+        else if (Gamepad.current == null && _inputType == InputType.Gamepad)
+        {
+            SwitchInputType(InputType.Automatic);
+        }
+    }
+
+    private void SwitchInputType(InputType newType)
+    {
+        if (_inputType != newType)
+        {
+            Debug.Log($"Switching input type: {_inputType} -> {newType}");
+            _inputType = newType;
+            ConfigureInputMode(); // Configura el comportamiento del nuevo modo
+            lastInputSwitchTime = Time.time;
+        }
+    }
+    private void SelectFirstButtonInActiveMenu()
+    {
+        foreach (GameObject menu in Menus)
+        {
+            int menuIndex;
+            if (menu.activeSelf && menuIndexLookup.TryGetValue(menu.name, out menuIndex))
+            {
+                if (menuIndex < ButtonsMenus.Count)
+                {
+                    List<GameObject> menuButtons = ButtonsMenus[menuIndex];
+                    if (menuButtons.Count > 0)
+                    {
+                        GameObject firstButton = menuButtons[0];
+                        EventSystem.current.SetSelectedGameObject(null);
+                        EventSystem.current.SetSelectedGameObject(firstButton);
+                        Debug.Log($"First button selected: {firstButton.name}");
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Fallback en caso de no encontrar botones
+        EventSystem.current.SetSelectedGameObject(null);
+        Debug.LogWarning("No active menu or buttons found to select.");
+    }
+
+
+    private void CleanLastSelectedButtons()
+    {
+        foreach (var menu in new List<GameObject>(lastSelectedButtons.Keys))
+        {
+            if (!Menus.Contains(menu))
+            {
+                lastSelectedButtons.Remove(menu);
+            }
+        }
+    }
+
+    private void LogAvailableControlSchemes()
+    {
+        foreach (var scheme in playerInput.actions.controlSchemes)
+        {
+            Debug.Log($"Available Control Scheme: {scheme.name}");
+        }
+    }
+
 }
