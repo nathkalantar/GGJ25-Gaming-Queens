@@ -190,13 +190,13 @@ MonoBehaviour:
   m_ActionsAsset: {fileID: -944628639613478452, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
   m_PointAction: {fileID: 8724420409246893449, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
   m_MoveAction: {fileID: -4832478435395979558, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
-  m_SubmitAction: {fileID: -6151777181554446807, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
-  m_CancelAction: {fileID: 1750427106742610524, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
+  m_SubmitAction: {fileID: 2064916234097673511, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
+  m_CancelAction: {fileID: -1967631576421560919, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
   m_LeftClickAction: {fileID: -3339107941721266375, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
   m_MiddleClickAction: {fileID: -1820534767580780154, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
   m_RightClickAction: {fileID: 3581246496273675211, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
   m_ScrollWheelAction: {fileID: 2966904997858287955, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
-  m_TrackedDevicePositionAction: {fileID: -6850732966073468669, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 0}
   m_TrackedDeviceOrientationAction: {fileID: 1000965221193983273, guid: b904071a8e3c9a14d96cd7db3b1bc2f4, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
@@ -293,14 +293,6 @@ MonoBehaviour:
     m_ActionId: de2a1248-9a06-4cdd-a137-fb3b808ed3dc
     m_ActionName: Pause/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 3cc4fe11-28b1-4be0-b7ab-6a7bbf135793
-    m_ActionName: Pause/Look[/Mouse/delta,/Pen/delta]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 125f9795-c9fb-4f99-9999-af5417f55b0a
-    m_ActionName: Pause/Fire[/Mouse/leftButton]
-  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 474008110}
         m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
@@ -320,14 +312,6 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 2d71e20a-205d-4c4c-aff8-a1a5712048ce
     m_ActionName: UI/Navigate[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 3e087008-933e-41d8-8a50-b3d8af9f0425
-    m_ActionName: UI/Submit[/Keyboard/enter]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 5b171948-caf3-4c67-84a8-4671a2732a8e
-    m_ActionName: UI/Cancel[/Keyboard/escape]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 475bda29-7023-4a48-b350-77f2869315bc
@@ -350,12 +334,12 @@ MonoBehaviour:
     m_ActionName: UI/RightClick[/Mouse/rightButton]
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: 2a5acb12-fdf0-4139-adf0-8ede99bc9757
-    m_ActionName: UI/TrackedDevicePosition
+    m_ActionId: 68cff166-3732-41e9-92a9-e23d9d2dd0d8
+    m_ActionName: UI/Submit[/Mouse/leftButton,/Keyboard/enter]
   - m_PersistentCalls:
       m_Calls: []
-    m_ActionId: 37a762ae-dd04-448e-b5ac-45c1227dca36
-    m_ActionName: UI/TrackedDeviceOrientation
+    m_ActionId: 2f52974a-928f-456c-aeba-a39f0dc06ce4
+    m_ActionName: UI/Cancel[/Keyboard/escape]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay
@@ -509,7 +493,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49d32ee13d13e0a449421acb1a17b41c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameState: 0
+  CurrentGameState: 0
+  CurrentInputType: 1
+  TargetFrameRate: 60
+  ScreenMode: 1
 --- !u!4 &551898512
 Transform:
   m_ObjectHideFlags: 0
@@ -832,7 +819,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8511669913780244781, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
       propertyPath: _inputType
-      value: 1
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8511669913780244781, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
+      propertyPath: localInputType
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8580491271308224828, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
       propertyPath: m_Colors.m_SelectedColor.b
