@@ -275,7 +275,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 45ef19f335797554d9023ff5858d526b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -295,9 +295,9 @@ Transform:
   m_GameObject: {fileID: 94613854}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: -1.52, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -735,9 +735,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 635fcb208016f1d4db1871b306aed950, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
-  happiness: 100
-  imagination: 100
+  health: 50
+  happiness: 50
+  imagination: 50
   healthDecreaseSpeed: 1
   happinessDecreaseSpeed: 1.5
   imaginationDecreaseSpeed: 2
@@ -747,6 +747,8 @@ MonoBehaviour:
   healthText: {fileID: 1897367394}
   happinessText: {fileID: 225055291}
   imaginationText: {fileID: 487181110}
+  panelBadEnding: {fileID: 1250279889}
+  panelEndingDelulu: {fileID: 731466915}
 --- !u!4 &305244291
 Transform:
   m_ObjectHideFlags: 0
@@ -1540,6 +1542,11 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &731466915 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6687121703551882141, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
+  m_PrefabInstance: {fileID: 8310241318922071778}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &765737832
 GameObject:
   m_ObjectHideFlags: 0
@@ -2117,6 +2124,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1195610663}
   m_CullTransparentMesh: 1
+--- !u!1 &1250279889 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 13414934582076960, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
+  m_PrefabInstance: {fileID: 8310241318922071778}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1327898290
 GameObject:
   m_ObjectHideFlags: 0
@@ -3019,6 +3031,10 @@ PrefabInstance:
     - target: {fileID: 3893775225717010649, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
       propertyPath: m_Name
       value: Pause Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 6330302832796266755, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6982920661329615641, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
       propertyPath: m_Pivot.x

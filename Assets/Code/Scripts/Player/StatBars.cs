@@ -9,9 +9,9 @@ public class StatBars : MonoBehaviour
     private const int minStatValue = 0;
 
     // Valores actuales de las barras
-    public float health = maxStatValue;
-    public float happiness = maxStatValue;
-    public float imagination = maxStatValue;
+    public float health = 50;
+    public float happiness = 50;
+    public float imagination = 50;
 
     // Velocidades de decremento (editables desde el Inspector)
     public float healthDecreaseSpeed = 1f;
@@ -28,6 +28,10 @@ public class StatBars : MonoBehaviour
     public TextMeshProUGUI happinessText;
     public TextMeshProUGUI imaginationText;
 
+    // Referencias a los paneles UI
+    public GameObject panelBadEnding;
+    public GameObject panelEndingDelulu;
+
     private InputManager inputManager;
 
     // Estados de congelación
@@ -39,13 +43,29 @@ public class StatBars : MonoBehaviour
     {
         // Configura los sliders si están asignados
         if (healthBar != null)
+        {
             healthBar.maxValue = maxStatValue;
+            healthBar.value = health;
+        }
 
         if (happinessBar != null)
+        {
             happinessBar.maxValue = maxStatValue;
+            happinessBar.value = happiness;
+        }
 
         if (imaginationBar != null)
+        {
             imaginationBar.maxValue = maxStatValue;
+            imaginationBar.value = imagination;
+        }
+
+        // Asegurarse de que los paneles están desactivados al inicio
+        if (panelBadEnding != null)
+            panelBadEnding.SetActive(false);
+
+        if (panelEndingDelulu != null)
+            panelEndingDelulu.SetActive(false);
 
         // Obtén la instancia del InputManager
         inputManager = InputManager.GetInstance();
@@ -83,6 +103,9 @@ public class StatBars : MonoBehaviour
 
         // Actualizar textos de valores
         UpdateTextValues();
+
+        // Verificar condiciones de fin de juego
+        CheckGameEndings();
     }
 
     private void UpdateSliders()
@@ -153,6 +176,23 @@ public class StatBars : MonoBehaviour
             colors.pressedColor = Color.gray;
             colors.selectedColor = Color.gray;
             slider.colors = colors;
+        }
+    }
+
+    private void CheckGameEndings()
+    {
+        // Verificar si todas las barras están en 0
+        if (health <= minStatValue && happiness <= minStatValue && imagination <= minStatValue)
+        {
+            if (panelBadEnding != null)
+                panelBadEnding.SetActive(true);
+        }
+
+        // Verificar si todas las barras están en 100
+        if (health >= maxStatValue && happiness >= maxStatValue && imagination >= maxStatValue)
+        {
+            if (panelEndingDelulu != null)
+                panelEndingDelulu.SetActive(true);
         }
     }
 
