@@ -7,7 +7,7 @@ using System.Collections;
 
 public class HUDManager : MonoBehaviour
 {
-    public int Day = 0;
+    public int Day = 1;
     public float dayTimer;
     
     // Máximos y mínimos de las barras
@@ -46,6 +46,9 @@ public class HUDManager : MonoBehaviour
     private PlayerPositions playerPositions;
     public TextMeshProUGUI timerText;
 
+    // Texto para el día actual
+    public TextMeshProUGUI dayText;
+
     // Estados de congelación
     private bool isHealthFrozen = false;
     private bool isHappinessFrozen = false;
@@ -53,9 +56,12 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
-        Day = 0;
+        Day = 1;
         dayTimer= 0;
         StartCoroutine(DayTimer()); // Iniciar el temporizador de días
+
+        ShowDayAnimation(Day);
+
 
         // Configura los sliders si están asignados
         if (healthBar != null)
@@ -142,6 +148,7 @@ public class HUDManager : MonoBehaviour
             }
 
             Day++; // Incrementar el día cuando termine el temporizador
+            ShowDayAnimation(Day); // Mostrar la animación del día
             Debug.Log($"Day incrementado a: {Day}");
         }
     }
@@ -156,17 +163,35 @@ public class HUDManager : MonoBehaviour
         }
     }
 
+    private void ShowDayAnimation(int currentDay)
+    {
+        if (dayText != null)
+        {
+            dayText.text = $"Día {currentDay}";
+            dayText.alpha = 0; // Asegurarse de que el texto esté invisible al inicio
+
+            // Animación con DoTween
+            dayText.DOFade(1, 1f) // Fade in
+                   .OnComplete(() =>
+                   {
+                       dayText.DOFade(0, 1f).SetDelay(2f); // Fade out con delay
+                   });
+
+            dayText.transform.localScale = Vector3.zero; // Escala inicial
+            dayText.transform.DOScale(1.5f, 1f).SetEase(Ease.OutBounce); // Animación de escala
+        }
+    }
     private float DayDecreased(float Statvalue)
     {
         switch (Day)
         {
-            case 0:
+            case 1:
                 Statvalue = Statvalue * 1;
                 break;
-            case 1:
+            case 2:
                 Statvalue = Statvalue * 3;
                 break;
-            case 2:
+            case 3:
                 Statvalue = Statvalue * 10;
                 break;
         }
