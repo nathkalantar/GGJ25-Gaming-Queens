@@ -1,5 +1,5 @@
-using UnityEngine;
-using UnityEngine.UI; // Necesario si usas barras de tipo UI Slider
+using UnityEngine; 
+using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic; // Para usar TextMeshPro
 using DG.Tweening;
@@ -9,7 +9,7 @@ public class HUDManager : MonoBehaviour
 {
     public int Day = 1;
     public float dayTimer;
-    
+
     // Máximos y mínimos de las barras
     private const int maxStatValue = 100;
     private const int minStatValue = 0;
@@ -67,7 +67,7 @@ public class HUDManager : MonoBehaviour
         DaySituation();
 
         Day = 1;
-        dayTimer= 0;
+        dayTimer = 0;
         StartCoroutine(DayTimer()); // Iniciar el temporizador de días
 
         ShowDayAnimation(Day);
@@ -215,50 +215,50 @@ public class HUDManager : MonoBehaviour
                 Statvalue = Statvalue * 10;
                 break;
             default:
-                Statvalue =  Statvalue * 1.1f;
+                Statvalue = Statvalue * 1.1f;
                 break;
-            
+
         }
         return Statvalue;
     }
     private void DaySituation()
-{
-    // Configura el tiempo del temporizador y otros cambios según el día
-    switch (Day)
     {
-        case 1:
-            countdown = 10f;
-            break;
-        case 2:
-            btnAnimations[0].gameObject.SetActive(true);
-            imaginationBar.gameObject.SetActive(true); // Activa la barra de imaginación
-            countdown = 10f;
-            break;
-        case 3:
-            btnAnimations[2].gameObject.SetActive(true);
-            happinessBar.gameObject.SetActive(true); // Activa la barra de felicidad
-            countdown = 15f;
-            break;
-        case 4:
-            countdown = 15f;
-            break;
-        case 5:
-            countdown = 20f;
-            break;
-        case 6:
-            countdown = 20f;
-            break;
-        default:
-            countdown = 30f; // Valor por defecto para días posteriores
-            break;
+        // Configura el tiempo del temporizador y otros cambios según el día
+        switch (Day)
+        {
+            case 1:
+                countdown = 10f;
+                break;
+            case 2:
+                btnAnimations[0].gameObject.SetActive(true);
+                imaginationBar.gameObject.SetActive(true); // Activa la barra de imaginación
+                countdown = 10f;
+                break;
+            case 3:
+                btnAnimations[2].gameObject.SetActive(true);
+                happinessBar.gameObject.SetActive(true); // Activa la barra de felicidad
+                countdown = 15f;
+                break;
+            case 4:
+                countdown = 15f;
+                break;
+            case 5:
+                countdown = 20f;
+                break;
+            case 6:
+                countdown = 20f;
+                break;
+            default:
+                countdown = 30f; // Valor por defecto para días posteriores
+                break;
+        }
     }
-}
 
     private void UpdateSliders()
     {
         if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
-        if (healthBar != null)
-            healthBar.value = Mathf.Clamp(health, minStatValue, maxStatValue);
+            if (healthBar != null)
+                healthBar.value = Mathf.Clamp(health, minStatValue, maxStatValue);
 
         if (happinessBar != null)
             happinessBar.value = Mathf.Clamp(happiness, minStatValue, maxStatValue);
