@@ -59,31 +59,24 @@ public class StatBars : MonoBehaviour
         // Reducir los valores de las barras con base en su velocidad si no están congeladas
         if (!isHealthFrozen)
         {
-            health = Mathf.Clamp(health - healthDecreaseSpeed * Time.deltaTime, minStatValue, maxStatValue);
+            health -= healthDecreaseSpeed * Time.deltaTime;
             CheckFreezeState(ref health, ref isHealthFrozen, healthBar);
         }
 
         if (!isHappinessFrozen)
         {
-            happiness = Mathf.Clamp(happiness - happinessDecreaseSpeed * Time.deltaTime, minStatValue, maxStatValue);
+            happiness -= happinessDecreaseSpeed * Time.deltaTime;
             CheckFreezeState(ref happiness, ref isHappinessFrozen, happinessBar);
         }
 
         if (!isImaginationFrozen)
         {
-            imagination = Mathf.Clamp(imagination - imaginationDecreaseSpeed * Time.deltaTime, minStatValue, maxStatValue);
+            imagination -= imaginationDecreaseSpeed * Time.deltaTime;
             CheckFreezeState(ref imagination, ref isImaginationFrozen, imaginationBar);
         }
 
         // Actualizar los sliders si están asignados
-        if (healthBar != null)
-            healthBar.value = health;
-
-        if (happinessBar != null)
-            happinessBar.value = happiness;
-
-        if (imaginationBar != null)
-            imaginationBar.value = imagination;
+        UpdateSliders();
 
         // Manejar el input para incrementar barras
         HandleInput();
@@ -92,21 +85,33 @@ public class StatBars : MonoBehaviour
         UpdateTextValues();
     }
 
+    private void UpdateSliders()
+    {
+        if (healthBar != null)
+            healthBar.value = Mathf.Clamp(health, minStatValue, maxStatValue);
+
+        if (happinessBar != null)
+            happinessBar.value = Mathf.Clamp(happiness, minStatValue, maxStatValue);
+
+        if (imaginationBar != null)
+            imaginationBar.value = Mathf.Clamp(imagination, minStatValue, maxStatValue);
+    }
+
     private void HandleInput()
     {
         Vector2 moveDirection = inputManager.GetMoveDirection();
 
         if (moveDirection == Vector2.left && !isHealthFrozen) // Botón izquierdo
         {
-            AddHealth(1);
+            health += 1;
         }
         else if (moveDirection == Vector2.up && !isHappinessFrozen) // Botón arriba
         {
-            AddHappiness(1);
+            happiness += 1;
         }
         else if (moveDirection == Vector2.right && !isImaginationFrozen) // Botón derecho
         {
-            AddImagination(1);
+            imagination += 1;
         }
     }
 
@@ -124,33 +129,30 @@ public class StatBars : MonoBehaviour
 
     private void CheckFreezeState(ref float value, ref bool isFrozen, Slider slider)
     {
-        if (value == maxStatValue)
+        if (value >= maxStatValue && !isFrozen)
         {
-            if (!isFrozen)
-            {
-                isFrozen = true;
-                Debug.Log("Barra Freeze: Alcanzó el máximo");
-                if (slider != null)
-                {
-                    ColorBlock colors = slider.colors;
-                    colors.disabledColor = Color.gray;
-                    slider.colors = colors;
-                }
-            }
+            isFrozen = true;
+            Debug.Log("Barra Freeze: Alcanzó o sobrepasó el máximo");
+            FreezeSliderVisuals(slider);
         }
-        else if (value == minStatValue)
+        else if (value <= minStatValue && !isFrozen)
         {
-            if (!isFrozen)
-            {
-                isFrozen = true;
-                Debug.Log("Barra Freeze: Alcanzó el mínimo");
-                if (slider != null)
-                {
-                    ColorBlock colors = slider.colors;
-                    colors.disabledColor = Color.gray;
-                    slider.colors = colors;
-                }
-            }
+            isFrozen = true;
+            Debug.Log("Barra Freeze: Alcanzó el mínimo");
+            FreezeSliderVisuals(slider);
+        }
+    }
+
+    private void FreezeSliderVisuals(Slider slider)
+    {
+        if (slider != null)
+        {
+            var colors = slider.colors;
+            colors.normalColor = Color.gray;
+            colors.highlightedColor = Color.gray;
+            colors.pressedColor = Color.gray;
+            colors.selectedColor = Color.gray;
+            slider.colors = colors;
         }
     }
 
@@ -159,7 +161,7 @@ public class StatBars : MonoBehaviour
     {
         if (!isHealthFrozen)
         {
-            health = Mathf.Clamp(health + amount, minStatValue, maxStatValue);
+            health += amount;
         }
     }
 
@@ -167,7 +169,7 @@ public class StatBars : MonoBehaviour
     {
         if (!isHappinessFrozen)
         {
-            happiness = Mathf.Clamp(happiness + amount, minStatValue, maxStatValue);
+            happiness += amount;
         }
     }
 
@@ -175,7 +177,7 @@ public class StatBars : MonoBehaviour
     {
         if (!isImaginationFrozen)
         {
-            imagination = Mathf.Clamp(imagination + amount, minStatValue, maxStatValue);
+            imagination += amount;
         }
     }
 }

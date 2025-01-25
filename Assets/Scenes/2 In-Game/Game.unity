@@ -744,9 +744,9 @@ MonoBehaviour:
   healthBar: {fileID: 814692297}
   happinessBar: {fileID: 712552961}
   imaginationBar: {fileID: 90491069}
-  healthText: {fileID: 0}
-  happinessText: {fileID: 0}
-  imaginationText: {fileID: 0}
+  healthText: {fileID: 1897367394}
+  happinessText: {fileID: 225055291}
+  imaginationText: {fileID: 487181110}
 --- !u!4 &305244291
 Transform:
   m_ObjectHideFlags: 0
