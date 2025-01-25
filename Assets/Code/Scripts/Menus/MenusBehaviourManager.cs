@@ -160,11 +160,7 @@ public class MenusBehaviourManager : MonoBehaviour
         GameManager.Instance.CurrentGameState = GameStates.Pause;
         Menus[0].SetActive(true);
 
-        List<GameObject> Buttons = ButtonsMenus[0];
-        GameObject firstButtonMenu = Buttons[0];
-
-        EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(firstButtonMenu);
+        EnsureButtonSelected(); // Asegurarse de que haya un botón seleccionado
 
         playerInput.SwitchCurrentActionMap("Pause");
     }

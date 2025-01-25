@@ -127,22 +127,34 @@ public class HUDManager : MonoBehaviour
     {
         while (true)
         {
-            // Inicializa el temporizador según el día actual
+            // Inicializa el temporizador según el día actual solo una vez por ciclo
             DaySituation();
 
             while (countdown > 0)
             {
-                countdown -= Time.deltaTime; // Reducir el tiempo restante
-                UpdateTimerText(countdown); // Actualizar el texto del temporizador
+                // Solo decrementar el temporizador si el estado del juego es Gameplay
+                if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
+                {
+                    countdown -= Time.deltaTime; // Reducir el tiempo restante
+                    UpdateTimerText(countdown); // Actualizar el texto del temporizador
+                }
+                
                 yield return null; // Esperar al siguiente frame
             }
 
-            // Incrementar el día cuando el temporizador llegue a 0
-            Day++;
-            ShowDayAnimation(Day); // Mostrar animación para el nuevo día
-            Debug.Log($"Día incrementado a: {Day}");
+            // Incrementar el día solo si se está en Gameplay
+            if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
+            {
+                Day++;
+                ShowDayAnimation(Day); // Mostrar animación para el nuevo día
+                Debug.Log($"Día incrementado a: {Day}");
+            }
+
+            // Reinicia el ciclo para el próximo día
         }
     }
+
+
 
     private void ReduceBars()
     {
