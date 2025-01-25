@@ -15,6 +15,11 @@ public class SettingsMenu : MonoBehaviour
     public TMP_Dropdown inputTypeDropdown;
     public Toggle vSyncToggle;
 
+    [Header("Audio Settings")]
+    public Slider musicSlider; // Slider para el volumen de música
+    public Slider sfxSlider;   // Slider para el volumen de efectos de sonido
+
+
     private Resolution[] availableResolutions;
 
     #endregion
@@ -27,6 +32,7 @@ public class SettingsMenu : MonoBehaviour
         InitializeScreenModeOptions();
         InitializeFrameRateOptions();
         InitializeInputTypeOptions();
+        InitializeAudioSettings();
         LoadSettings();
     }
 
@@ -122,6 +128,23 @@ public class SettingsMenu : MonoBehaviour
         QualitySettings.vSyncCount = isEnabled ? 1 : 0;
         GameManager.Instance.SaveSettings();
     }
+    public void OnGlobalVolumeChanged(float sliderValue)
+    {
+        AudioManager.Instance.SetGlobalVolume(sliderValue);
+        GameManager.Instance.SaveSettings();
+    }
+
+    public void OnMusicVolumeChanged(float sliderValue)
+    {
+        AudioManager.Instance.SetMusicVolume(sliderValue);
+        GameManager.Instance.SaveSettings();
+    }
+
+    public void OnSFXVolumeChanged(float sliderValue)
+    {
+        AudioManager.Instance.SetSFXVolume(sliderValue);
+        GameManager.Instance.SaveSettings();
+    }
 
     private void LoadSettings()
     {
@@ -138,6 +161,17 @@ public class SettingsMenu : MonoBehaviour
             vSyncToggle.isOn = QualitySettings.vSyncCount > 0;
         }
     }
+    public void InitializeAudioSettings()
+    {
+        // Configurar sliders con los valores actuales del AudioManager
+        musicSlider.value = AudioManager.Instance.GetMusicVolume();
+        sfxSlider.value = AudioManager.Instance.GetSFXVolume();
+
+        // Listener para los sliders
+        musicSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
+        sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+    }
+
 
     #endregion
 }

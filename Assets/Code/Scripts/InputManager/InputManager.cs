@@ -14,8 +14,6 @@ public class InputManager : MonoBehaviour
     private Vector2 interactionDirection = Vector2.zero;
     private bool moveTapped = false; // Nueva variable para detectar el "tap"
 
-
-
     private bool interactPressed = false;
     private bool submitPressed = false;
     private bool pausePressed = false;

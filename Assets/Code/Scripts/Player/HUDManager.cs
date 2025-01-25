@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI; // Necesario si usas barras de tipo UI Slider
-using TMPro; // Para usar TextMeshPro
+using TMPro;
+using System.Collections.Generic; // Para usar TextMeshPro
 
-public class StatBars : MonoBehaviour
+public class HUDManager : MonoBehaviour
 {
     // Máximos y mínimos de las barras
     private const int maxStatValue = 100;
@@ -31,6 +32,9 @@ public class StatBars : MonoBehaviour
     // Referencias a los paneles UI
     public GameObject panelBadEnding;
     public GameObject panelEndingDelulu;
+
+    [Header("Botónes")]
+    public List<Animator> btnAnimations = new List<Animator>();
 
     private PlayerPositions playerPositions;
 
@@ -135,16 +139,20 @@ public class StatBars : MonoBehaviour
             {
                 health += 1;
                 playerPositions.MoveToHealthPosition();
+                btnAnimations[1].SetTrigger("Pressed");
+                
             }
             else if (moveDirection == Vector2.right && !isHappinessFrozen) // Botón arriba
             {
                 happiness += 1;
                 playerPositions.MoveToHappinessPosition();
+                btnAnimations[2].SetTrigger("Pressed");
             }
             else if (moveDirection == Vector2.left && !isImaginationFrozen) // Botón derecho
             {
                 imagination += 1;
                 playerPositions.MoveToImaginationPosition();
+                btnAnimations[0].SetTrigger("Pressed");
             }
         }
     }

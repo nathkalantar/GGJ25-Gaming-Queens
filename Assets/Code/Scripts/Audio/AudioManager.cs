@@ -1,8 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
+    [Header("Audio Mixer")]
+    [SerializeField] private AudioMixer audioMixer; // Referencia al Audio Mixer
     public static AudioManager Instance;
 
     private Dictionary<string, AudioClipData> audioClipDataMap;
@@ -13,6 +16,11 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Settings")]
     [SerializeField] private AudioSource audioSourcePrefab; // Prefab para fuentes adicionales
     [SerializeField] private List<AudioClipData> audioClipDataList; // Lista de ScriptableObjects
+
+    [Header("Volume Settings")]
+    [Range(0.0001f, 1f)] [SerializeField] private float defaultGlobalVolume = 1f;
+    [Range(0.0001f, 1f)] [SerializeField] private float defaultMusicVolume = 1f;
+    [Range(0.0001f, 1f)] [SerializeField] private float defaultSFXVolume = 1f;
 
     private void Awake()
     {
@@ -34,7 +42,26 @@ public class AudioManager : MonoBehaviour
         musicSource.loop = true;
 
         LoadClips();
+
+        // Asegurar AudioSources
+        EnsureAudioSources();
+
+        // Configurar volúmenes iniciales
+        SetGlobalVolume(defaultGlobalVolume);
+        SetMusicVolume(defaultMusicVolume);
+        SetSFXVolume(defaultSFXVolume);
     }
+
+    private void EnsureAudioSources()
+    {
+        // Configurar AudioSources para música y efectos si no existen
+        musicSource = gameObject.AddComponent<AudioSource>();
+        musicSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Music")[0];
+
+        sfxSource = gameObject.AddComponent<AudioSource>();
+        sfxSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("SFX")[0];
+    }
+
 
     private void LoadClips()
     {
@@ -106,5 +133,45 @@ public class AudioManager : MonoBehaviour
                 Destroy(source.gameObject); // Eliminar todas las fuentes de audio temporales
             }
         }
+    }
+
+    // Métodos para ajustar el volumen global
+    public void SetGlobalVolume(float volume)
+    {
+        float volumeInDecibels = Mathf.Log10(volume) * 20; // Convertir a decibelios
+        audioMixer.SetFloat("MasterVolume", volumeInDecibels);
+    }
+
+    // Métodos para ajustar el volumen de música
+    public void SetMusicVolume(float volume)
+    {
+        float volumeInDecibels = Mathf.Log10(volume) * 20;
+        audioMixer.SetFloat("MusicVolume", volumeInDecibels);
+    }
+
+    // Métodos para ajustar el volumen de SFX
+    public void SetSFXVolume(float volume)
+    {
+        float volumeInDecibels = Mathf.Log10(volume) * 20;
+        audioMixer.SetFloat("SFXVolume", volumeInDecibels);
+    }
+
+    // Métodos para obtener el volumen actual
+    public float GetGlobalVolume()
+    {
+        audioMixer.GetFloat("MasterVolume", out float volumeInDecibels);
+        return Mathf.Pow(10, volumeInDecibels / 20);
+    }
+
+    public float GetMusicVolume()
+    {
+        audioMixer.GetFloat("MusicVolume", out float volumeInDecibels);
+        return Mathf.Pow(10, volumeInDecibels / 20);
+    }
+
+    public float GetSFXVolume()
+    {
+        audioMixer.GetFloat("SFXVolume", out float volumeInDecibels);
+        return Mathf.Pow(10, volumeInDecibels / 20);
     }
 }
