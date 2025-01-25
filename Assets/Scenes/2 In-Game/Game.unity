@@ -2567,14 +2567,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3299656125576163938, guid: a19879c17e29dc34e8dca2eafb71873c, type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 519420031}
-    - target: {fileID: 3299656125576163938, guid: a19879c17e29dc34e8dca2eafb71873c, type: 3}
-      propertyPath: m_UIInputModule
-      value: 
-      objectReference: {fileID: 412899470}
     - target: {fileID: 5404695491624976022, guid: a19879c17e29dc34e8dca2eafb71873c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2654,7 +2646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3893775225717010649, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6982920661329615641, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
       propertyPath: m_Pivot.x

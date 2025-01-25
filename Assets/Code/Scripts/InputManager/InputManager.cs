@@ -11,8 +11,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class InputManager : MonoBehaviour
 {
-    private Vector2 moveDirection = Vector2.zero;
-    private bool jumpPressed = false;
+    private Vector2 interactionDirection = Vector2.zero;
     private bool interactPressed = false;
     private bool submitPressed = false;
     private bool pausePressed = false;
@@ -37,24 +36,12 @@ public class InputManager : MonoBehaviour
     {
         if (context.performed)
         {
-            moveDirection = context.ReadValue<Vector2>();
+            interactionDirection = context.ReadValue<Vector2>();
         }
         else if (context.canceled)
         {
-            moveDirection = context.ReadValue<Vector2>();
+            interactionDirection = context.ReadValue<Vector2>();
         } 
-    }
-
-    public void JumpPressed(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            jumpPressed = true;
-        }
-        else if (context.canceled)
-        {
-            jumpPressed = false;
-        }
     }
 
     public void InteractButtonPressed(InputAction.CallbackContext context)
@@ -94,19 +81,12 @@ public class InputManager : MonoBehaviour
 
     public Vector2 GetMoveDirection() 
     {
-        return moveDirection;
+        return interactionDirection;
     }
 
     // for any of the below 'Get' methods, if we're getting it then we're also using it,
     // which means we should set it to false so that it can't be used again until actually
     // pressed again.
-
-    public bool GetJumpPressed() 
-    {
-        bool result = jumpPressed;
-        jumpPressed = false;
-        return result;
-    }
 
     public bool GetInteractPressed() 
     {

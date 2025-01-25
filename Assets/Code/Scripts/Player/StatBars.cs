@@ -5,7 +5,7 @@ using UnityEngine.UI; // Necesario si usas barras de tipo UI Slider
 
 public class StatBars : MonoBehaviour
 {
-    // Máximos y mínimos de las barras
+    // Mï¿½ximos y mï¿½nimos de las barras
     private const int maxStatValue = 100;
     private const int minStatValue = 0;
 
@@ -19,16 +19,14 @@ public class StatBars : MonoBehaviour
     public float happinessDecreaseSpeed = 1.5f;
     public float imaginationDecreaseSpeed = 2f;
 
-    // Referencias opcionales a sliders o imágenes para mostrar las barras visualmente
+    // Referencias opcionales a sliders o imï¿½genes para mostrar las barras visualmente
     public Slider healthBar;
     public Slider happinessBar;
     public Slider imaginationBar;
 
-    private InputManager inputManager;
-
     private void Start()
     {
-        // Configura los sliders si están asignados
+        // Configura los sliders si estï¿½n asignados
         if (healthBar != null)
             healthBar.maxValue = maxStatValue;
 
@@ -37,9 +35,6 @@ public class StatBars : MonoBehaviour
 
         if (imaginationBar != null)
             imaginationBar.maxValue = maxStatValue;
-
-        // Obtén la instancia del InputManager
-        inputManager = InputManager.GetInstance();
     }
 
     private void Update()
@@ -49,7 +44,7 @@ public class StatBars : MonoBehaviour
         happiness = Mathf.Clamp(happiness - happinessDecreaseSpeed * Time.deltaTime, minStatValue, maxStatValue);
         imagination = Mathf.Clamp(imagination - imaginationDecreaseSpeed * Time.deltaTime, minStatValue, maxStatValue);
 
-        // Actualizar los sliders si están asignados
+        // Actualizar los sliders si estï¿½n asignados
         if (healthBar != null)
             healthBar.value = health;
 
@@ -65,23 +60,26 @@ public class StatBars : MonoBehaviour
 
     private void HandleInput()
     {
-        Vector2 moveDirection = inputManager.GetMoveDirection();
+        Vector2 moveDirection = InputManager.GetInstance().GetMoveDirection();
 
-        if (moveDirection == Vector2.left) // Botón izquierdo
+        if (moveDirection == Vector2.left) // Botï¿½n izquierdo
         {
+            Debug.Log("Izquierdo");
             AddHealth(1);
         }
-        else if (moveDirection == Vector2.up) // Botón arriba
+        else if (moveDirection == Vector2.up) // Botï¿½n arriba
         {
+            Debug.Log("Arriba");
             AddHappiness(1);
         }
-        else if (moveDirection == Vector2.right) // Botón derecho
+        else if (moveDirection == Vector2.right) // Botï¿½n derecho
         {
+            Debug.Log("Derecho");
             AddImagination(1);
         }
     }
 
-    // Métodos para agregar valores a las barras
+    // Mï¿½todos para agregar valores a las barras
     public void AddHealth(float amount)
     {
         health = Mathf.Clamp(health + amount, minStatValue, maxStatValue);
