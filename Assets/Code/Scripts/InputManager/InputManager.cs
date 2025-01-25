@@ -12,6 +12,10 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     private Vector2 interactionDirection = Vector2.zero;
+    private bool moveTapped = false; // Nueva variable para detectar el "tap"
+
+
+
     private bool interactPressed = false;
     private bool submitPressed = false;
     private bool pausePressed = false;
@@ -36,12 +40,14 @@ public class InputManager : MonoBehaviour
     {
         if (context.performed)
         {
+            // Registrar la dirección solo si es un "tap"
             interactionDirection = context.ReadValue<Vector2>();
+            moveTapped = true;
         }
         else if (context.canceled)
         {
-            interactionDirection = context.ReadValue<Vector2>();
-        } 
+            interactionDirection = Vector2.zero; // Resetear la dirección cuando se cancela
+        }
     }
 
     public void InteractButtonPressed(InputAction.CallbackContext context)
@@ -81,7 +87,16 @@ public class InputManager : MonoBehaviour
 
     public Vector2 GetMoveDirection() 
     {
-        return interactionDirection;
+        if (moveTapped)
+        {
+            // Retorna la dirección solo una vez
+            moveTapped = false;
+            Vector2 result = interactionDirection;
+            interactionDirection = Vector2.zero; // Resetear después del tap
+            return result;
+        }
+
+        return Vector2.zero; // Si no hubo "tap", retorna cero
     }
 
     // for any of the below 'Get' methods, if we're getting it then we're also using it,
