@@ -48,6 +48,7 @@ public class HUDManager : MonoBehaviour
 
     // Texto para el día actual
     public TextMeshProUGUI dayText;
+    public float countdown;
 
     // Estados de congelación
     private bool isHealthFrozen = false;
@@ -56,12 +57,20 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
+        happinessBar.gameObject.SetActive(false);
+        imaginationBar.gameObject.SetActive(false);
+
+        btnAnimations[0].gameObject.SetActive(false);
+        btnAnimations[2].gameObject.SetActive(false);
+
+        countdown = 10f;
+        DaySituation();
+
         Day = 1;
         dayTimer= 0;
         StartCoroutine(DayTimer()); // Iniciar el temporizador de días
 
         ShowDayAnimation(Day);
-
 
         // Configura los sliders si están asignados
         if (healthBar != null)
@@ -99,27 +108,7 @@ public class HUDManager : MonoBehaviour
     private void Update()
     {
         // Reducir los valores de las barras con base en su velocidad si no están congeladas
-        if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
-        {
-            if (!isHealthFrozen)
-            {
-                health = Mathf.Max(health - DayDecreased(healthDecreaseSpeed) * Time.deltaTime, minStatValue);
-                CheckFreezeState(ref health, ref isHealthFrozen, healthBar);
-               
-            }
-
-            if (!isHappinessFrozen)
-            {
-                happiness = Mathf.Max(happiness - DayDecreased(happinessDecreaseSpeed) * Time.deltaTime, minStatValue);
-                CheckFreezeState(ref happiness, ref isHappinessFrozen, happinessBar);
-            }
-
-            if (!isImaginationFrozen)
-            {
-                imagination = Mathf.Max(imagination - DayDecreased(imaginationDecreaseSpeed) * Time.deltaTime, minStatValue);
-                CheckFreezeState(ref imagination, ref isImaginationFrozen, imaginationBar);
-            }
-        }
+        ReduceBars();
 
         // Actualizar los sliders si están asignados
         UpdateSliders();
@@ -138,18 +127,44 @@ public class HUDManager : MonoBehaviour
     {
         while (true)
         {
-            float countdown = 30f; // Temporizador de 30 segundos
+            // Inicializa el temporizador según el día actual
+            DaySituation();
 
             while (countdown > 0)
             {
                 countdown -= Time.deltaTime; // Reducir el tiempo restante
-                UpdateTimerText(countdown); // Actualizar el texto
+                UpdateTimerText(countdown); // Actualizar el texto del temporizador
                 yield return null; // Esperar al siguiente frame
             }
 
-            Day++; // Incrementar el día cuando termine el temporizador
-            ShowDayAnimation(Day); // Mostrar la animación del día
-            Debug.Log($"Day incrementado a: {Day}");
+            // Incrementar el día cuando el temporizador llegue a 0
+            Day++;
+            ShowDayAnimation(Day); // Mostrar animación para el nuevo día
+            Debug.Log($"Día incrementado a: {Day}");
+        }
+    }
+
+    private void ReduceBars()
+    {
+        if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
+        {
+            if (!isHealthFrozen && healthBar.IsActive())
+            {
+                health = Mathf.Max(health - DayDecreased(healthDecreaseSpeed) * Time.deltaTime, minStatValue);
+                CheckFreezeState(ref health, ref isHealthFrozen, healthBar);
+            }
+
+            if (!isHappinessFrozen && happinessBar.IsActive())
+            {
+                happiness = Mathf.Max(happiness - DayDecreased(happinessDecreaseSpeed) * Time.deltaTime, minStatValue);
+                CheckFreezeState(ref happiness, ref isHappinessFrozen, happinessBar);
+            }
+
+            if (!isImaginationFrozen && imaginationBar.IsActive())
+            {
+                imagination = Mathf.Max(imagination - DayDecreased(imaginationDecreaseSpeed) * Time.deltaTime, minStatValue);
+                CheckFreezeState(ref imagination, ref isImaginationFrozen, imaginationBar);
+            }
         }
     }
 
@@ -159,7 +174,7 @@ public class HUDManager : MonoBehaviour
         if (timerText != null)
         {
             int seconds = Mathf.CeilToInt(countdown); // Redondear hacia arriba para mostrar segundos completos
-            timerText.text = $"Next Day: {seconds}s"; // Formato del texto
+            timerText.text = $"Next Day: {seconds}s"; // Actualiza el texto del temporizador
         }
     }
 
@@ -186,17 +201,58 @@ public class HUDManager : MonoBehaviour
         switch (Day)
         {
             case 1:
-                Statvalue = Statvalue * 1;
                 break;
             case 2:
-                Statvalue = Statvalue * 3;
                 break;
             case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                Statvalue = Statvalue * 3;
+                break;
+            case 6:
                 Statvalue = Statvalue * 10;
                 break;
+            default:
+                Statvalue =  Statvalue * 1.1f;
+                break;
+            
         }
         return Statvalue;
     }
+    private void DaySituation()
+{
+    // Configura el tiempo del temporizador y otros cambios según el día
+    switch (Day)
+    {
+        case 1:
+            countdown = 10f;
+            break;
+        case 2:
+            btnAnimations[0].gameObject.SetActive(true);
+            imaginationBar.gameObject.SetActive(true); // Activa la barra de imaginación
+            countdown = 10f;
+            break;
+        case 3:
+            btnAnimations[2].gameObject.SetActive(true);
+            happinessBar.gameObject.SetActive(true); // Activa la barra de felicidad
+            countdown = 15f;
+            break;
+        case 4:
+            countdown = 15f;
+            break;
+        case 5:
+            countdown = 20f;
+            break;
+        case 6:
+            countdown = 20f;
+            break;
+        default:
+            countdown = 30f; // Valor por defecto para días posteriores
+            break;
+    }
+}
 
     private void UpdateSliders()
     {
@@ -217,7 +273,7 @@ public class HUDManager : MonoBehaviour
 
         if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
         {
-            if (moveDirection == Vector2.up && !isHealthFrozen) // Botón izquierdo
+            if (moveDirection == Vector2.up && !isHealthFrozen && btnAnimations[1].gameObject.activeSelf)
             {
                 health += 1;
                 playerPositions.MoveToHealthPosition();
@@ -225,14 +281,14 @@ public class HUDManager : MonoBehaviour
                 ShowFloatingText(healthBar.transform, "+1");
 
             }
-            else if (moveDirection == Vector2.right && !isHappinessFrozen) // Botón arriba
+            else if (moveDirection == Vector2.right && !isHappinessFrozen && btnAnimations[2].gameObject.activeSelf)
             {
                 happiness += 1;
                 playerPositions.MoveToHappinessPosition();
                 btnAnimations[2].SetTrigger("Pressed");
                 ShowFloatingText(happinessBar.transform, "+1");
             }
-            else if (moveDirection == Vector2.left && !isImaginationFrozen) // Botón derecho
+            else if (moveDirection == Vector2.left && !isImaginationFrozen && btnAnimations[0].gameObject.activeSelf)
             {
                 imagination += 1;
                 playerPositions.MoveToImaginationPosition();
