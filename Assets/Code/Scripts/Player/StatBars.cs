@@ -24,6 +24,8 @@ public class StatBars : MonoBehaviour
     public Slider happinessBar;
     public Slider imaginationBar;
 
+    private InputManager inputManager;
+
     private void Start()
     {
         // Configura los sliders si están asignados
@@ -35,6 +37,9 @@ public class StatBars : MonoBehaviour
 
         if (imaginationBar != null)
             imaginationBar.maxValue = maxStatValue;
+
+        // Obtén la instancia del InputManager
+        inputManager = InputManager.GetInstance();
     }
 
     private void Update()
@@ -53,6 +58,27 @@ public class StatBars : MonoBehaviour
 
         if (imaginationBar != null)
             imaginationBar.value = imagination;
+
+        // Manejar el input para incrementar barras
+        HandleInput();
+    }
+
+    private void HandleInput()
+    {
+        Vector2 moveDirection = inputManager.GetMoveDirection();
+
+        if (moveDirection == Vector2.left) // Botón izquierdo
+        {
+            AddHealth(1);
+        }
+        else if (moveDirection == Vector2.up) // Botón arriba
+        {
+            AddHappiness(1);
+        }
+        else if (moveDirection == Vector2.right) // Botón derecho
+        {
+            AddImagination(1);
+        }
     }
 
     // Métodos para agregar valores a las barras
@@ -71,4 +97,5 @@ public class StatBars : MonoBehaviour
         imagination = Mathf.Clamp(imagination + amount, minStatValue, maxStatValue);
     }
 }
+
 
