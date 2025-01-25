@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI; // Necesario si usas barras de tipo UI Slider
 using TMPro;
 using System.Collections.Generic; // Para usar TextMeshPro
+using DG.Tweening;
 
 public class HUDManager : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class HUDManager : MonoBehaviour
     public TextMeshProUGUI healthText;
     public TextMeshProUGUI happinessText;
     public TextMeshProUGUI imaginationText;
+
+    public GameObject floatingTextPrefab;
 
     // Referencias a los paneles UI
     public GameObject panelBadEnding;
@@ -140,19 +143,47 @@ public class HUDManager : MonoBehaviour
                 health += 1;
                 playerPositions.MoveToHealthPosition();
                 btnAnimations[1].SetTrigger("Pressed");
-                
+                ShowFloatingText(healthBar.transform, "+1");
+
             }
             else if (moveDirection == Vector2.right && !isHappinessFrozen) // Botón arriba
             {
                 happiness += 1;
                 playerPositions.MoveToHappinessPosition();
                 btnAnimations[2].SetTrigger("Pressed");
+                ShowFloatingText(happinessBar.transform, "+1");
             }
             else if (moveDirection == Vector2.left && !isImaginationFrozen) // Botón derecho
             {
                 imagination += 1;
                 playerPositions.MoveToImaginationPosition();
                 btnAnimations[0].SetTrigger("Pressed");
+                ShowFloatingText(imaginationBar.transform, "+1");
+            }
+        }
+    }
+
+    private void ShowFloatingText(Transform target, string text)
+    {
+        if (floatingTextPrefab != null)
+        {
+            // Instanciar el texto flotante cerca del objetivo
+            GameObject floatingText = Instantiate(floatingTextPrefab, target.position, Quaternion.identity, target);
+            TextMeshProUGUI textComponent = floatingText.GetComponent<TextMeshProUGUI>();
+
+            if (textComponent != null)
+            {
+                textComponent.text = text;
+                textComponent.alpha = 0;
+
+                // Animación de DoTween
+                floatingText.transform.localScale = Vector3.zero;
+                floatingText.transform.DOScale(1.5f, 0.5f).SetEase(Ease.OutBounce);
+                textComponent.DOFade(1, 0.5f).OnComplete(() =>
+                {
+                    // Destruir el texto después de un tiempo
+                    Destroy(floatingText, 1f);
+                });
             }
         }
     }
