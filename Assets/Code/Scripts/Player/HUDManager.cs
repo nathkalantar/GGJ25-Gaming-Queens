@@ -44,6 +44,7 @@ public class HUDManager : MonoBehaviour
     public List<Animator> btnAnimations = new List<Animator>();
 
     private PlayerPositions playerPositions;
+    public TextMeshProUGUI timerText;
 
     // Estados de congelación
     private bool isHealthFrozen = false;
@@ -131,15 +132,28 @@ public class HUDManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(30); // Esperar 30 segundos
-            Day++; // Incrementar la variable `Day`
-            Debug.Log($"Day incrementado a: {Day}"); // Opcional: Mostrar mensaje en consola
+            float countdown = 30f; // Temporizador de 30 segundos
+
+            while (countdown > 0)
+            {
+                countdown -= Time.deltaTime; // Reducir el tiempo restante
+                UpdateTimerText(countdown); // Actualizar el texto
+                yield return null; // Esperar al siguiente frame
+            }
+
+            Day++; // Incrementar el día cuando termine el temporizador
+            Debug.Log($"Day incrementado a: {Day}");
         }
     }
 
-    private void Timer()
+    // Método para actualizar el texto del temporizador
+    private void UpdateTimerText(float countdown)
     {
-        
+        if (timerText != null)
+        {
+            int seconds = Mathf.CeilToInt(countdown); // Redondear hacia arriba para mostrar segundos completos
+            timerText.text = $"Next Day: {seconds}s"; // Formato del texto
+        }
     }
 
     private float DayDecreased(float Statvalue)

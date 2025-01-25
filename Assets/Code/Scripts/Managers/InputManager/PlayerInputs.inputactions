@@ -146,8 +146,8 @@
                 },
                 {
                     "name": "left",
-                    "id": "bbb1da8c-c9a7-49f8-8e62-c27ca389460f",
-                    "path": "<Gamepad>/buttonEast",
+                    "id": "3c76022e-c637-412b-ada1-20cfca830c31",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": "Automatic;Gamepad",
@@ -168,8 +168,8 @@
                 },
                 {
                     "name": "right",
-                    "id": "3c76022e-c637-412b-ada1-20cfca830c31",
-                    "path": "<Gamepad>/buttonWest",
+                    "id": "bbb1da8c-c9a7-49f8-8e62-c27ca389460f",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "Automatic;Gamepad",
