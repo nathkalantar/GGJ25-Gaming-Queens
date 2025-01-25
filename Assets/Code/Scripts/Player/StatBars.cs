@@ -32,7 +32,7 @@ public class StatBars : MonoBehaviour
     public GameObject panelBadEnding;
     public GameObject panelEndingDelulu;
 
-    private InputManager inputManager;
+    private PlayerPositions playerPositions;
 
     // Estados de congelación
     private bool isHealthFrozen = false;
@@ -68,7 +68,7 @@ public class StatBars : MonoBehaviour
             panelEndingDelulu.SetActive(false);
 
         // Obtén la instancia del InputManager
-        inputManager = InputManager.GetInstance();
+        playerPositions = FindAnyObjectByType<PlayerPositions>();
 
         // Actualizar textos iniciales
         UpdateTextValues();
@@ -77,22 +77,26 @@ public class StatBars : MonoBehaviour
     private void Update()
     {
         // Reducir los valores de las barras con base en su velocidad si no están congeladas
-        if (!isHealthFrozen)
+        if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
         {
-            health -= healthDecreaseSpeed * Time.deltaTime;
-            CheckFreezeState(ref health, ref isHealthFrozen, healthBar);
-        }
+            if (!isHealthFrozen)
+            {
+                health = Mathf.Max(health - healthDecreaseSpeed * Time.deltaTime, minStatValue);
+                CheckFreezeState(ref health, ref isHealthFrozen, healthBar);
+               
+            }
 
-        if (!isHappinessFrozen)
-        {
-            happiness -= happinessDecreaseSpeed * Time.deltaTime;
-            CheckFreezeState(ref happiness, ref isHappinessFrozen, happinessBar);
-        }
+            if (!isHappinessFrozen)
+            {
+                happiness = Mathf.Max(happiness - happinessDecreaseSpeed * Time.deltaTime, minStatValue);
+                CheckFreezeState(ref happiness, ref isHappinessFrozen, happinessBar);
+            }
 
-        if (!isImaginationFrozen)
-        {
-            imagination -= imaginationDecreaseSpeed * Time.deltaTime;
-            CheckFreezeState(ref imagination, ref isImaginationFrozen, imaginationBar);
+            if (!isImaginationFrozen)
+            {
+                imagination = Mathf.Max(imagination - imaginationDecreaseSpeed * Time.deltaTime, minStatValue);
+                CheckFreezeState(ref imagination, ref isImaginationFrozen, imaginationBar);
+            }
         }
 
         // Actualizar los sliders si están asignados
@@ -110,6 +114,7 @@ public class StatBars : MonoBehaviour
 
     private void UpdateSliders()
     {
+        if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
         if (healthBar != null)
             healthBar.value = Mathf.Clamp(health, minStatValue, maxStatValue);
 
@@ -122,19 +127,25 @@ public class StatBars : MonoBehaviour
 
     private void HandleInput()
     {
-        Vector2 moveDirection = inputManager.GetMoveDirection();
+        Vector2 moveDirection = InputManager.GetInstance().GetMoveDirection();
 
-        if (moveDirection == Vector2.left && !isHealthFrozen) // Botón izquierdo
+        if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
         {
-            health += 1;
-        }
-        else if (moveDirection == Vector2.up && !isHappinessFrozen) // Botón arriba
-        {
-            happiness += 1;
-        }
-        else if (moveDirection == Vector2.right && !isImaginationFrozen) // Botón derecho
-        {
-            imagination += 1;
+            if (moveDirection == Vector2.up && !isHealthFrozen) // Botón izquierdo
+            {
+                health += 1;
+                playerPositions.MoveToHealthPosition();
+            }
+            else if (moveDirection == Vector2.right && !isHappinessFrozen) // Botón arriba
+            {
+                happiness += 1;
+                playerPositions.MoveToHappinessPosition();
+            }
+            else if (moveDirection == Vector2.left && !isImaginationFrozen) // Botón derecho
+            {
+                imagination += 1;
+                playerPositions.MoveToImaginationPosition();
+            }
         }
     }
 
@@ -158,7 +169,7 @@ public class StatBars : MonoBehaviour
             Debug.Log("Barra Freeze: Alcanzó o sobrepasó el máximo");
             FreezeSliderVisuals(slider);
         }
-        else if (value <= minStatValue && !isFrozen)
+        else if (value == minStatValue && !isFrozen)
         {
             isFrozen = true;
             Debug.Log("Barra Freeze: Alcanzó el mínimo");
@@ -182,7 +193,7 @@ public class StatBars : MonoBehaviour
     private void CheckGameEndings()
     {
         // Verificar si todas las barras están en 0
-        if (health <= minStatValue && happiness <= minStatValue && imagination <= minStatValue)
+        if (health == minStatValue && happiness == minStatValue && imagination == minStatValue)
         {
             if (panelBadEnding != null)
                 panelBadEnding.SetActive(true);
