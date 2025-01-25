@@ -3,9 +3,13 @@ using UnityEngine.UI; // Necesario si usas barras de tipo UI Slider
 using TMPro;
 using System.Collections.Generic; // Para usar TextMeshPro
 using DG.Tweening;
+using System.Collections;
 
 public class HUDManager : MonoBehaviour
 {
+    public int Day = 0;
+    public float dayTimer;
+    
     // Máximos y mínimos de las barras
     private const int maxStatValue = 100;
     private const int minStatValue = 0;
@@ -48,6 +52,10 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
+        Day = 0;
+        dayTimer= 0;
+        StartCoroutine(DayTimer()); // Iniciar el temporizador de días
+
         // Configura los sliders si están asignados
         if (healthBar != null)
         {
@@ -88,20 +96,20 @@ public class HUDManager : MonoBehaviour
         {
             if (!isHealthFrozen)
             {
-                health = Mathf.Max(health - healthDecreaseSpeed * Time.deltaTime, minStatValue);
+                health = Mathf.Max(health - DayDecreased(healthDecreaseSpeed) * Time.deltaTime, minStatValue);
                 CheckFreezeState(ref health, ref isHealthFrozen, healthBar);
                
             }
 
             if (!isHappinessFrozen)
             {
-                happiness = Mathf.Max(happiness - happinessDecreaseSpeed * Time.deltaTime, minStatValue);
+                happiness = Mathf.Max(happiness - DayDecreased(happinessDecreaseSpeed) * Time.deltaTime, minStatValue);
                 CheckFreezeState(ref happiness, ref isHappinessFrozen, happinessBar);
             }
 
             if (!isImaginationFrozen)
             {
-                imagination = Mathf.Max(imagination - imaginationDecreaseSpeed * Time.deltaTime, minStatValue);
+                imagination = Mathf.Max(imagination - DayDecreased(imaginationDecreaseSpeed) * Time.deltaTime, minStatValue);
                 CheckFreezeState(ref imagination, ref isImaginationFrozen, imaginationBar);
             }
         }
@@ -117,6 +125,38 @@ public class HUDManager : MonoBehaviour
 
         // Verificar condiciones de fin de juego
         CheckGameEndings();
+    }
+
+    private IEnumerator DayTimer()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(30); // Esperar 30 segundos
+            Day++; // Incrementar la variable `Day`
+            Debug.Log($"Day incrementado a: {Day}"); // Opcional: Mostrar mensaje en consola
+        }
+    }
+
+    private void Timer()
+    {
+        
+    }
+
+    private float DayDecreased(float Statvalue)
+    {
+        switch (Day)
+        {
+            case 0:
+                Statvalue = Statvalue * 1;
+                break;
+            case 1:
+                Statvalue = Statvalue * 3;
+                break;
+            case 2:
+                Statvalue = Statvalue * 10;
+                break;
+        }
+        return Statvalue;
     }
 
     private void UpdateSliders()
