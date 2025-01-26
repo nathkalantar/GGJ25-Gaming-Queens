@@ -245,28 +245,27 @@ public class HUDManager : MonoBehaviour
 
     private float DayDecreased(float Statvalue)
     {
+        float multiplier = 1f;
         switch (Day)
         {
             case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
+                return Statvalue;
             case 5:
-                Statvalue = Statvalue * 3;
-                break;
-            case 6:
-                Statvalue = Statvalue * 10;
-                break;
+            multiplier = multiplier * 1.5f;
+                return Statvalue * multiplier;
+            case 10:
+            multiplier = multiplier * 2f;
+                return Statvalue * multiplier;
+            case 15:
+            multiplier = multiplier * 4f;
+                return Statvalue * multiplier;
+            case 20:
+            multiplier = multiplier * 5f;
+                return Statvalue * multiplier;
             default:
-                Statvalue = Statvalue * 1.1f;
-                break;
-
+            multiplier = multiplier * 1.1f;
+                return Statvalue * multiplier;
         }
-        return Statvalue;
     }
     private void DaySituation()
     {
@@ -296,7 +295,7 @@ public class HUDManager : MonoBehaviour
                 countdown = 20f;
                 break;
             default:
-                countdown = 30f; // Valor por defecto para días posteriores
+                countdown = 25f; // Valor por defecto para días posteriores
                 break;
         }
     }
