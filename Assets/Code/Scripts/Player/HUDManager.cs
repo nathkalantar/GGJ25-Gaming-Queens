@@ -133,18 +133,27 @@ public class HUDManager : MonoBehaviour
     {
         while (true)
         {
-            // Inicializa el temporizador según el día actual solo una vez por ciclo
+            // Inicializa el temporizador según el día actual
             DaySituation();
 
+            // Mostrar el texto del día
+            ShowDayAnimation(Day);
+
+            // Temporizador del día
             while (countdown > 0)
             {
                 // Solo decrementar el temporizador si el estado del juego es Gameplay
                 if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
                 {
+                    if (Mathf.Approximately(countdown, 1f)) // Falta 1 segundo para cambiar de día
+                    {
+                        AnimateDayTextOut(); // Animar la salida del texto del día
+                    }
+
                     countdown -= Time.deltaTime; // Reducir el tiempo restante
                     UpdateTimerText(countdown); // Actualizar el texto del temporizador
                 }
-                
+
                 yield return null; // Esperar al siguiente frame
             }
 
@@ -152,14 +161,23 @@ public class HUDManager : MonoBehaviour
             if (GameManager.Instance.CurrentGameState == GameStates.Gameplay)
             {
                 Day++;
-                ShowDayAnimation(Day); // Mostrar animación para el nuevo día
                 Debug.Log($"Día incrementado a: {Day}");
             }
-
-            // Reinicia el ciclo para el próximo día
         }
     }
 
+
+    private void AnimateDayTextOut()
+    {
+        if (dayText != null)
+        {
+            dayText.DOFade(0, 1f) // Fade out en 1 segundo
+                   .OnComplete(() =>
+                   {
+                       dayText.transform.localScale = Vector3.zero; // Escala inicial después de desaparecer
+                   });
+        }
+    }
 
 
     private void ReduceBars()
@@ -201,19 +219,15 @@ public class HUDManager : MonoBehaviour
         if (dayText != null)
         {
             dayText.text = $"Day {currentDay}";
-            dayText.alpha = 0; // Asegurarse de que el texto esté invisible al inicio
+            dayText.alpha = 1; // Asegurarse de que el texto esté completamente visible
+            dayText.transform.localScale = Vector3.one; // Escala normal al inicio del día
 
-            // Animación con DoTween
-            dayText.DOFade(1, 1f) // Fade in
-                   .OnComplete(() =>
-                   {
-                       dayText.DOFade(0, 1f).SetDelay(2f); // Fade out con delay
-                   });
-
-            dayText.transform.localScale = Vector3.zero; // Escala inicial
-            dayText.transform.DOScale(1.5f, 1f).SetEase(Ease.OutBounce); // Animación de escala
+            // Animación inicial de aparición
+            dayText.transform.localScale = Vector3.zero; // Escala inicial para el efecto de bounce
+            dayText.transform.DOScale(1.5f, 1f).SetEase(Ease.OutBounce); // Escala de aparición
         }
     }
+
     private float DayDecreased(float Statvalue)
     {
         switch (Day)
