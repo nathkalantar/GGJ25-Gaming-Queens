@@ -19,6 +19,34 @@ AudioMixerGroupController:
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!244 &-1480459617748677619
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 78546ca180f600044b5b03754724251a
+  m_EffectName: Duck Volume
+  m_MixLevel: 93c060dce51a5364aa36807212973c1e
+  m_Parameters:
+  - m_ParameterName: Threshold
+    m_GUID: 1b4b2d363fcdd6d41a2d3834f762f261
+  - m_ParameterName: Ratio
+    m_GUID: 76962a88b73751f4fb52d25131b04315
+  - m_ParameterName: Attack Time
+    m_GUID: 4170a6c8fdf637246bde551b5c016846
+  - m_ParameterName: Release Time
+    m_GUID: 950693f294aadd247bbe6d4d6a8a8af3
+  - m_ParameterName: Make-up Gain
+    m_GUID: 5747669b8d117b1409739a4c29201b0e
+  - m_ParameterName: Knee
+    m_GUID: 42a33bf84df01714d9c3bd1413fb4d20
+  - m_ParameterName: Sidechain Mix
+    m_GUID: 72abb0472986ece4f9eee4c5a3c8db29
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &-1164062514386513402
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -48,12 +76,18 @@ AudioMixerController:
   m_SuspendThreshold: -80
   m_EnableSuspend: 1
   m_UpdateMode: 0
-  m_ExposedParameters: []
+  m_ExposedParameters:
+  - guid: f1098ecb234d1c349ab5bc0dc14e2302
+    name: MyExposedParam
+  - guid: 51768d22da3adc641a9b10800d184a41
+    name: MyExposedParam 1
+  - guid: 2db0f752c50cc154abd0e0a488a48871
+    name: MyExposedParam 2
   m_AudioMixerGroupViews:
   - guids:
     - 617b952f52c699447bcaa0334570822b
-    - 96ae769173f8382479dc3387bcf957c8
     - b3362df85f345b146bcebdeb395ca705
+    - 96ae769173f8382479dc3387bcf957c8
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -101,7 +135,8 @@ AudioMixerSnapshotController:
   m_Name: Snapshot
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: de57b8972f32b23429bd06ce0a8da5b7
-  m_FloatValues: {}
+  m_FloatValues:
+    86d9937aa157b5e499c4f855ae91cbed: 0.13552584
   m_TransitionOverrides: {}
 --- !u!243 &1546061049185465108
 AudioMixerGroupController:

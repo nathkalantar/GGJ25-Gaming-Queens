@@ -16,10 +16,12 @@ public class SettingsMenu : MonoBehaviour
     public Toggle vSyncToggle;
 
     [Header("Audio Settings")]
+    public Slider globalSlider; // Slider para el volumen de música
     public Slider musicSlider; // Slider para el volumen de música
     public Slider sfxSlider;   // Slider para el volumen de efectos de sonido
 
 
+    
     private Resolution[] availableResolutions;
 
     #endregion
@@ -164,10 +166,12 @@ public class SettingsMenu : MonoBehaviour
     public void InitializeAudioSettings()
     {
         // Configurar sliders con los valores actuales del AudioManager
+        globalSlider.value = AudioManager.Instance.GetGlobalVolume();
         musicSlider.value = AudioManager.Instance.GetMusicVolume();
         sfxSlider.value = AudioManager.Instance.GetSFXVolume();
 
         // Listener para los sliders
+        globalSlider.onValueChanged.AddListener(OnGlobalVolumeChanged);
         musicSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
         sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
     }
