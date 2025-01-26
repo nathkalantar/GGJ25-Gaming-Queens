@@ -6304,11 +6304,16 @@ MonoBehaviour:
   healthIcon: {fileID: 477259088}
   happinessIcon: {fileID: 1653214244}
   imaginationIcon: {fileID: 388691107}
+  arrowPrefab: {fileID: 5660426189686990796, guid: 229abbb9202b0c642a9f75335195e017, type: 3}
   hudManager: {fileID: 1327898295}
   dialogueStartScale: 0
   dialogueEndScale: 1
   iconStartScale: 0
   iconEndScale: 3.8
+  arrowOffsetY: 25
+  arrowOffsetX: 50
+  arrowStartScale: 0
+  arrowEndScale: 0.2
 --- !u!4 &1996615824
 Transform:
   m_ObjectHideFlags: 0
@@ -7706,10 +7711,10 @@ SceneRoots:
   - {fileID: 2612394405425305427}
   - {fileID: 1879037883}
   - {fileID: 1236758469}
+  - {fileID: 1996615824}
   - {fileID: 1650249012}
   - {fileID: 8310241318922071778}
   - {fileID: 1327898291}
-  - {fileID: 1996615824}
   - {fileID: 2089735156}
   - {fileID: 1212529462}
   - {fileID: 94613857}
