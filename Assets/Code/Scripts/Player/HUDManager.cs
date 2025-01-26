@@ -39,7 +39,6 @@ public class HUDManager : MonoBehaviour
     // Referencias a los paneles UI
     public GameObject panelBadEnding;
     public GameObject panelEndingDelulu;
-    public GameObject endscreen;
 
     [Header("Botónes")]
     public List<Animator> btnAnimations = new List<Animator>();
@@ -60,7 +59,7 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
-        endscreen.gameObject.SetActive(false);
+        
 
         happinessBar.gameObject.SetActive(false);
         imaginationBar.gameObject.SetActive(false);
@@ -355,7 +354,8 @@ public class HUDManager : MonoBehaviour
         if (floatingTextPrefab != null)
         {
             // Instanciar el texto flotante cerca del objetivo
-            GameObject floatingText = Instantiate(floatingTextPrefab, target.position, Quaternion.identity, target);
+            Vector3 offset = new Vector3(0, 25, 0); // Ajusta el valor Y para moverlo más arriba
+            GameObject floatingText = Instantiate(floatingTextPrefab, target.position + offset, Quaternion.identity, target);
             TextMeshProUGUI textComponent = floatingText.GetComponent<TextMeshProUGUI>();
 
             if (textComponent != null)
@@ -374,6 +374,7 @@ public class HUDManager : MonoBehaviour
             }
         }
     }
+
 
     private void UpdateTextValues()
     {
@@ -421,7 +422,7 @@ public class HUDManager : MonoBehaviour
         int slidersAtMax = 0;
         int slidersAtMin = 0;
 
-        // Verificar si las barras han alcanzado el máximo o mínimo
+        // Verificar cuántos sliders están en su valor máximo y mínimo
         if (Mathf.Approximately(health, maxStatValue)) slidersAtMax++;
         if (Mathf.Approximately(happiness, maxStatValue)) slidersAtMax++;
         if (Mathf.Approximately(imagination, maxStatValue)) slidersAtMax++;
@@ -430,14 +431,14 @@ public class HUDManager : MonoBehaviour
         if (Mathf.Approximately(happiness, minStatValue)) slidersAtMin++;
         if (Mathf.Approximately(imagination, minStatValue)) slidersAtMin++;
 
-        // Mostrar el ending correspondiente
+        // Mostrar el panel de Delulu si 2 o más sliders están al máximo
         if (slidersAtMax >= 2 && panelEndingDelulu != null && !panelEndingDelulu.activeSelf)
         {
             panelEndingDelulu.SetActive(true);
-
             Debug.Log("Ending Delulu activado.");
         }
 
+        // Mostrar el panel de Bad Ending si 2 o más sliders están al mínimo
         if (slidersAtMin >= 2 && panelBadEnding != null && !panelBadEnding.activeSelf)
         {
             panelBadEnding.SetActive(true);
@@ -445,11 +446,17 @@ public class HUDManager : MonoBehaviour
         }
     }
 
+
+
     public IEnumerator final()
     {
         yield return new WaitForSeconds(3f);
-        endscreen.SetActive(true);
+
+
+        // Actualiza el texto de "Bob survived X days"
+        FindObjectOfType<SurvivalDaysText>()?.UpdateSurvivalText();
     }
+
 
 
     // Métodos para agregar valores a las barras
