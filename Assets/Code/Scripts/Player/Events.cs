@@ -3,20 +3,23 @@ using UnityEngine;
 
 public class Events : MonoBehaviour
 {
-    public GameObject dialogueBubblePrefab; // Prefab del globo de diálogo
-    public GameObject healthIconPrefab;    // Prefab del ícono de Health
-    public GameObject happinessIconPrefab; // Prefab del ícono de Happiness
-    public GameObject imaginationIconPrefab; // Prefab del ícono de Imagination
+    public GameObject dialogueBubble;      // Referencia al globo de diálogo en la escena
+    public GameObject healthIcon;         // Referencia al ícono de Health en la escena
+    public GameObject happinessIcon;      // Referencia al ícono de Happiness en la escena
+    public GameObject imaginationIcon;    // Referencia al ícono de Imagination en la escena
 
-    public HUDManager hudManager; // Referencia al HUDManager
-    public GameObject player; // Referencia al GameObject Player
+    public HUDManager hudManager;         // Referencia al HUDManager
 
-    private GameObject activeDialogueBubble; // Referencia al globo de diálogo instanciado
-    private GameObject activeIcon; // Referencia al ícono instanciado
     private bool eventInProgress = false;
 
     private void Start()
     {
+        // Inicializar los globos e íconos como inactivos
+        if (dialogueBubble != null) dialogueBubble.SetActive(false);
+        if (healthIcon != null) healthIcon.SetActive(false);
+        if (happinessIcon != null) happinessIcon.SetActive(false);
+        if (imaginationIcon != null) imaginationIcon.SetActive(false);
+
         // Comenzar a verificar los eventos
         StartCoroutine(EventLoop());
     }
@@ -25,8 +28,8 @@ public class Events : MonoBehaviour
     {
         while (true)
         {
-            // Esperar 2 días antes de intentar el próximo evento
-            yield return new WaitUntil(() => hudManager.Day % 2 == 0 && !eventInProgress);
+            // Esperar hasta que sea el Día 3 o más y que sea cada 2 días (Día 3, 5, 7, etc.)
+            yield return new WaitUntil(() => hudManager.Day >= 3 && hudManager.Day % 2 == 1 && !eventInProgress);
 
             // Iniciar el evento Bob Needy
             StartCoroutine(BobNeedyEvent());
@@ -41,25 +44,25 @@ public class Events : MonoBehaviour
         string selectedStat = SelectRandomStat();
         Debug.Log($"Evento Bob Needy: {selectedStat} seleccionado.");
 
-        // Instanciar el globo de diálogo
-        if (dialogueBubblePrefab != null)
+        // Activar el globo de diálogo
+        if (dialogueBubble != null)
         {
-            activeDialogueBubble = Instantiate(dialogueBubblePrefab, player.transform.position + new Vector3(0, 2f, 0), Quaternion.identity);
+            dialogueBubble.SetActive(true);
         }
 
-        // Instanciar el ícono correspondiente
+        // Activar el ícono correspondiente sin modificar su posición
         switch (selectedStat)
         {
             case "health":
-                activeIcon = Instantiate(healthIconPrefab, activeDialogueBubble.transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
+                ActivateIcon(healthIcon);
                 hudManager.healthDecreaseSpeed *= 2; // Duplicar velocidad de disminución
                 break;
             case "happiness":
-                activeIcon = Instantiate(happinessIconPrefab, activeDialogueBubble.transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
+                ActivateIcon(happinessIcon);
                 hudManager.happinessDecreaseSpeed *= 2; // Duplicar velocidad de disminución
                 break;
             case "imagination":
-                activeIcon = Instantiate(imaginationIconPrefab, activeDialogueBubble.transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
+                ActivateIcon(imaginationIcon);
                 hudManager.imaginationDecreaseSpeed *= 2; // Duplicar velocidad de disminución
                 break;
         }
@@ -71,19 +74,21 @@ public class Events : MonoBehaviour
         switch (selectedStat)
         {
             case "health":
-                hudManager.healthDecreaseSpeed /= 2;
+                hudManager.healthDecreaseSpeed /= 2; // Restaurar velocidad original
                 break;
             case "happiness":
-                hudManager.happinessDecreaseSpeed /= 2;
+                hudManager.happinessDecreaseSpeed /= 2; // Restaurar velocidad original
                 break;
             case "imagination":
-                hudManager.imaginationDecreaseSpeed /= 2;
+                hudManager.imaginationDecreaseSpeed /= 2; // Restaurar velocidad original
                 break;
         }
 
-        // Destruir el globo de diálogo y el ícono
-        if (activeDialogueBubble != null) Destroy(activeDialogueBubble);
-        if (activeIcon != null) Destroy(activeIcon);
+        // Desactivar el globo de diálogo y los íconos
+        if (dialogueBubble != null) dialogueBubble.SetActive(false);
+        if (healthIcon != null) healthIcon.SetActive(false);
+        if (happinessIcon != null) happinessIcon.SetActive(false);
+        if (imaginationIcon != null) imaginationIcon.SetActive(false);
 
         eventInProgress = false;
         Debug.Log("Evento Bob Needy terminado.");
@@ -104,5 +109,14 @@ public class Events : MonoBehaviour
         }
 
         return "health"; // Valor por defecto
+    }
+
+    private void ActivateIcon(GameObject icon)
+    {
+        if (icon != null)
+        {
+            icon.SetActive(true);
+            // No modificar posición, ya que se mantiene la configuración de escena
+        }
     }
 }
