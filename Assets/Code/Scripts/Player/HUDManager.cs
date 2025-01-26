@@ -39,6 +39,7 @@ public class HUDManager : MonoBehaviour
     // Referencias a los paneles UI
     public GameObject panelBadEnding;
     public GameObject panelEndingDelulu;
+    public GameObject endscreen;
 
     [Header("Botónes")]
     public List<Animator> btnAnimations = new List<Animator>();
@@ -59,6 +60,8 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
+        endscreen.gameObject.SetActive(false);
+
         happinessBar.gameObject.SetActive(false);
         imaginationBar.gameObject.SetActive(false);
 
@@ -290,6 +293,7 @@ public class HUDManager : MonoBehaviour
         {
             if (moveDirection == Vector2.up && !isHealthFrozen && btnAnimations[1].gameObject.activeSelf)
             {
+                AudioManager.Instance.PlaySFX("sfx_ui_page");
                 health += 1;
                 playerPositions.MoveToHealthPosition();
                 btnAnimations[1].SetTrigger("Pressed");
@@ -299,6 +303,7 @@ public class HUDManager : MonoBehaviour
             }
             else if (moveDirection == Vector2.right && !isHappinessFrozen && btnAnimations[2].gameObject.activeSelf)
             {
+                AudioManager.Instance.PlaySFX("sfx_ui_button");
                 happiness += 1;
                 playerPositions.MoveToHappinessPosition();
                 btnAnimations[2].SetTrigger("Pressed");
@@ -307,6 +312,7 @@ public class HUDManager : MonoBehaviour
             }
             else if (moveDirection == Vector2.left && !isImaginationFrozen && btnAnimations[0].gameObject.activeSelf)
             {
+                AudioManager.Instance.PlaySFX("Sfx_UI");
                 imagination += 1;
                 playerPositions.MoveToImaginationPosition();
                 btnAnimations[0].SetTrigger("Pressed");
@@ -400,6 +406,7 @@ public class HUDManager : MonoBehaviour
         if (slidersAtMax >= 2 && panelEndingDelulu != null && !panelEndingDelulu.activeSelf)
         {
             panelEndingDelulu.SetActive(true);
+
             Debug.Log("Ending Delulu activado.");
         }
 
@@ -408,6 +415,12 @@ public class HUDManager : MonoBehaviour
             panelBadEnding.SetActive(true);
             Debug.Log("Bad Ending activado.");
         }
+    }
+
+    public IEnumerator final()
+    {
+        yield return new WaitForSeconds(3f);
+        endscreen.SetActive(true);
     }
 
 

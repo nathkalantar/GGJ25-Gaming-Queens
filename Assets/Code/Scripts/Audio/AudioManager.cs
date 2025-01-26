@@ -1,26 +1,27 @@
 using UnityEngine;
-using UnityEngine.Audio;
-using System.Collections;
 using System.Collections.Generic;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    [Header("Audio Mixer")]
-    [SerializeField] private AudioMixer audioMixer; // Referencia al Audio Mixer
-
-    private Dictionary<string, AudioClipData> audioClipDataMap;
-    [SerializeField] private List<AudioClipData> audioClipDataList; // Lista de ScriptableObjects para almacenar datos de clips
+    [Header("Audio Clips")]
+    [SerializeField] private List<AudioClip> musicClips; // Lista de clips de música
+    [SerializeField] private List<AudioClip> sfxClips;   // Lista de clips de efectos de sonido
+    [SerializeField] private List<AudioClip> ambientClips; // Lista de clips de sonido ambiental
 
 
     private AudioSource musicSource;
     private AudioSource sfxSource;
+    private AudioSource ambientSource; // Nuevo AudioSource para sonido ambiental
+
 
     [Header("Volume Settings")]
-    [Range(0.0001f, 1f)] [SerializeField] private float defaultGlobalVolume = 1f;
-    [Range(0.0001f, 1f)] [SerializeField] private float defaultMusicVolume = 1f;
-    [Range(0.0001f, 1f)] [SerializeField] private float defaultSFXVolume = 1f;
+    [Range(0f, 1f)] public float masterVolume = 1f; // Volumen global
+    [Range(0f, 1f)] public float musicVolume = 1f;  // Volumen de música
+    [Range(0f, 1f)] public float sfxVolume = 1f;    // Volumen de efectos de sonido
+    [Range(0f, 1f)] public float ambientVolume = 0.75f; // Volumen de sonido ambiental
+
 
     private void Awake()
     {
@@ -28,189 +29,105 @@ public class AudioManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            InitializeAudioSources();
         }
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void InitializeAudioSources()
+    {
+        // Crear el AudioSource para música
+        musicSource = gameObject.AddComponent<AudioSource>();
+        musicSource.loop = true;
+        musicSource.playOnAwake = false;
+
+        // Crear el AudioSource para efectos de sonido
+        sfxSource = gameObject.AddComponent<AudioSource>();
+        sfxSource.playOnAwake = false;
+
+        ambientSource = gameObject.AddComponent<AudioSource>();
+        ambientSource.loop = true;
+        ambientSource.playOnAwake = false;
+    }
+
+    // Reproducir música desde la lista
+    public void PlayMusic(string clipName)
+    {
+        AudioClip clip = musicClips.Find(c => c.name == clipName);
+        if (clip == null)
+        {
+            Debug.LogWarning($"No se encontró música con el nombre '{clipName}'.");
             return;
         }
 
-        // Cargar clips y volúmenes iniciales
-        LoadClips();
-        LoadVolumes(); // Cargar volúmenes guardados
-
-        musicSource = gameObject.AddComponent<AudioSource>();
-        musicSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Music")[0];
-        musicSource.loop = true;
-
-        sfxSource = gameObject.AddComponent<AudioSource>();
-        sfxSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("SFX")[0];
+        musicSource.clip = clip;
+        musicSource.volume = musicVolume * masterVolume; // Aplicar volúmenes
+        musicSource.Play();
     }
 
-    private void Start()
+    public void PlayAmbient(string clipName)
     {
-        LoadClips();
-    }
-
-    private void LoadClips()
-    {
-        audioClipDataMap = new Dictionary<string, AudioClipData>();
-
-        foreach (var audioClipData in audioClipDataList)
+        AudioClip clip = ambientClips.Find(c => c.name == clipName);
+        if (clip == null)
         {
-            if (audioClipData.clip != null)
-            {
-                // Usa el ID del AudioClipData como clave
-                string id = string.IsNullOrEmpty(audioClipData.customId) ? audioClipData.id : audioClipData.customId;
-
-                if (!audioClipDataMap.ContainsKey(id))
-                {
-                    audioClipDataMap.Add(id, audioClipData);
-                }
-                else
-                {
-                    Debug.LogWarning($"Ya existe un AudioClipData con el ID '{id}'.");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("AudioClipData no tiene asignado un clip de audio.");
-            }
-        }
-    }
-
-
-    public void PlayMusic(string clipId)
-    {
-        if (audioClipDataMap.TryGetValue(clipId, out AudioClipData data) && data.audioType == AudioType.Music)
-        {
-            musicSource.clip = data.clip;
-            musicSource.volume = data.volume;
-            musicSource.pitch = data.pitch;
-            musicSource.Play();
-        }
-        else
-        {
-            Debug.LogWarning($"No se encontró música con el ID '{clipId}' o el tipo no es música.");
-        }
-    }
-
-    public void PlayOneShot(string clipId)
-    {
-        if (audioClipDataMap.TryGetValue(clipId, out AudioClipData data) && data.audioType == AudioType.OneShot)
-        {
-            sfxSource.PlayOneShot(data.clip, data.volume);
-        }
-        else
-        {
-            Debug.LogWarning($"No se encontró efecto de sonido 'OneShot' con el ID '{clipId}'.");
-        }
-    }
-
-    public void PlayLoopingSFX(string clipId, Vector3 position)
-    {
-        if (audioClipDataMap.TryGetValue(clipId, out AudioClipData data) && data.audioType == AudioType.LoopingSFX)
-        {
-            AudioSource tempSource = gameObject.AddComponent<AudioSource>();
-            tempSource.clip = data.clip;
-            tempSource.volume = data.volume;
-            tempSource.pitch = data.pitch;
-            tempSource.loop = true;
-            tempSource.spatialBlend = 1f; // Para simular efectos 3D
-            tempSource.transform.position = position;
-            tempSource.Play();
-
-            StartCoroutine(DestroyAudioSourceWhenFinished(tempSource));
-        }
-        else
-        {
-            Debug.LogWarning($"No se encontró efecto de sonido en loop con el ID '{clipId}'.");
-        }
-    }
-
-    private IEnumerator DestroyAudioSourceWhenFinished(AudioSource source)
-    {
-        yield return new WaitForSeconds(source.clip.length + 0.1f);
-        Destroy(source);
-    }
-
-    public void StopMusic()
-    {
-        musicSource.Stop();
-    }
-
-    public void StopAllLoopingSFX()
-    {
-        foreach (var source in FindObjectsOfType<AudioSource>())
-        {
-            if (source != musicSource && source != sfxSource)
-            {
-                Destroy(source);
-            }
-        }
-    }
-
-    // Métodos para ajustar volúmenes con transiciones suaves
-    public void SetGlobalVolume(float targetVolume, float duration = 1f)
-    {
-        StartCoroutine(SmoothVolumeChange("MasterVolume", targetVolume, duration));
-    }
-
-    public void SetMusicVolume(float targetVolume, float duration = 1f)
-    {
-        StartCoroutine(SmoothVolumeChange("MusicVolume", targetVolume, duration));
-    }
-
-    public void SetSFXVolume(float targetVolume, float duration = 1f)
-    {
-        StartCoroutine(SmoothVolumeChange("SFXVolume", targetVolume, duration));
-    }
-    public float GetGlobalVolume()
-    {
-        audioMixer.GetFloat("MasterVolume", out float volumeInDecibels);
-        return Mathf.Pow(10, volumeInDecibels / 20); // Convertir de decibelios a un rango de 0 a 1
-    }
-
-    public float GetMusicVolume()
-    {
-        audioMixer.GetFloat("MusicVolume", out float volumeInDecibels);
-        return Mathf.Pow(10, volumeInDecibels / 20); // Convertir de decibelios a un rango de 0 a 1
-    }
-
-    public float GetSFXVolume()
-    {
-        audioMixer.GetFloat("SFXVolume", out float volumeInDecibels);
-        return Mathf.Pow(10, volumeInDecibels / 20); // Convertir de decibelios a un rango de 0 a 1
-    }
-
-
-    private IEnumerator SmoothVolumeChange(string parameterName, float targetVolume, float duration)
-    {
-        audioMixer.GetFloat(parameterName, out float currentVolumeInDecibels);
-        float currentVolume = Mathf.Pow(10, currentVolumeInDecibels / 20);
-
-        float elapsedTime = 0f;
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            float newVolume = Mathf.Lerp(currentVolume, targetVolume, elapsedTime / duration);
-            float newVolumeInDecibels = Mathf.Log10(Mathf.Max(newVolume, 0.0001f)) * 20;
-            audioMixer.SetFloat(parameterName, newVolumeInDecibels);
-            yield return null;
+            Debug.LogWarning($"No se encontró sonido ambiental con el nombre '{clipName}'.");
+            return;
         }
 
-        float finalVolumeInDecibels = Mathf.Log10(Mathf.Max(targetVolume, 0.0001f)) * 20;
-        audioMixer.SetFloat(parameterName, finalVolumeInDecibels);
+        ambientSource.clip = clip;
+        ambientSource.volume = ambientVolume * masterVolume; // Aplicar volúmenes
+        ambientSource.Play();
     }
 
-    private void LoadVolumes()
+    // Reproducir efecto de sonido desde la lista
+    public void PlaySFX(string clipName)
     {
-        float globalVolume = PlayerPrefs.GetFloat("GlobalVolume", defaultGlobalVolume);
-        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", defaultMusicVolume);
-        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", defaultSFXVolume);
+        AudioClip clip = sfxClips.Find(c => c.name == clipName);
+        if (clip == null)
+        {
+            Debug.LogWarning($"No se encontró efecto de sonido con el nombre '{clipName}'.");
+            return;
+        }
 
-        SetGlobalVolume(globalVolume);
-        SetMusicVolume(musicVolume);
-        SetSFXVolume(sfxVolume);
+        sfxSource.volume = sfxVolume * masterVolume; // Aplicar volúmenes
+        sfxSource.PlayOneShot(clip);
+    }
+
+    // Métodos para ajustar volúmenes
+    public void SetMasterVolume(float value)
+    {
+        masterVolume = Mathf.Clamp01(value);
+        ApplyVolumes();
+    }
+
+    public void SetMusicVolume(float value)
+    {
+        musicVolume = Mathf.Clamp01(value);
+        ApplyVolumes();
+    }
+
+    public void SetSFXVolume(float value)
+    {
+        sfxVolume = Mathf.Clamp01(value);
+        ApplyVolumes();
+    }
+
+    private void ApplyVolumes()
+    {
+        musicSource.volume = musicVolume * masterVolume;
+        sfxSource.volume = sfxVolume * masterVolume;
+        ambientSource.volume = ambientVolume * masterVolume;
+    }
+    public void SetAmbientVolume(float value)
+    {
+        ambientVolume = Mathf.Clamp01(value);
+        ApplyVolumes();
+    }
+    public void StopAmbient()
+    {
+        ambientSource.Stop();
     }
 }

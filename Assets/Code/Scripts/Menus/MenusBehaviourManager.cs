@@ -88,7 +88,8 @@ public class MenusBehaviourManager : MonoBehaviour
     {
         LoadInputTypeFromGameManager(); // Cargar tipo de input desde el GameManager.
         ConfigureInputMode();
-        Close_Charge();
+        LoadCloseBeginning();
+        StartMusic();
         
         if(localInputType == InputType.Keyboard)
         {
@@ -158,9 +159,29 @@ public class MenusBehaviourManager : MonoBehaviour
     public void PauseGame()
     {
         GameManager.Instance.CurrentGameState = GameStates.Pause;
-        Menus[0].SetActive(true);
 
-        EnsureButtonSelected(); // Asegurarse de que haya un botón seleccionado
+        // Activar el menú de pausa (asumiendo que Menus[0] es el PauseMenu)
+        GameObject pauseMenu = Menus[0];
+        if (pauseMenu == null)
+        {
+            Debug.LogError("El menú de pausa no está configurado en Menus[0].");
+            return;
+        }
+
+        // Obtener el animador asociado al menú de pausa
+        int pauseMenuIndex = menuIndexLookup.ContainsKey(pauseMenu.name) ? menuIndexLookup[pauseMenu.name] : -1;
+        Animator pauseAnimator = pauseMenuIndex >= 0 && pauseMenuIndex < MenusAnimators.Count ? MenusAnimators[pauseMenuIndex] : null;
+
+        if (pauseAnimator != null)
+        {
+            // Ejecutar animación inicial del menú de pausa
+            StartCoroutine(AnimationIgnition(pauseMenu, pauseAnimator));
+        }
+        else
+        {
+            // Usar DOTween como fallback si no hay Animator
+            StartCoroutine(DOTweenIgnition(pauseMenu));
+        }
 
         playerInput.SwitchCurrentActionMap("Pause");
     }
@@ -169,7 +190,7 @@ public class MenusBehaviourManager : MonoBehaviour
     {
         GameManager.Instance.CurrentGameState = GameStates.Gameplay;
 
-        Close_Charge();
+        LoadCloseBeginning();
 
         playerInput.SwitchCurrentActionMap("Gameplay");
     }
@@ -392,7 +413,7 @@ public class MenusBehaviourManager : MonoBehaviour
     #endregion  
 
     #region Behaviour Transitions
-    public void Close_Charge()
+    public void LoadCloseBeginning()
     {
         foreach (GameObject menu in Menus)
         {
@@ -404,6 +425,7 @@ public class MenusBehaviourManager : MonoBehaviour
         {
             MenuIgnition();
             GameManager.Instance.CurrentGameState = GameStates.Pause;
+
         }
         else
         {
@@ -784,6 +806,10 @@ public class MenusBehaviourManager : MonoBehaviour
         #endif
     }
 
+    public void OpenURL(string url)
+    {
+        Application.OpenURL(url);
+    }
     #endregion
     #endregion
 
@@ -800,26 +826,50 @@ public class MenusBehaviourManager : MonoBehaviour
     #endregion
 
     #region Audio Functions
-    /*public void ReproducirPointerEnter()
+    private  void StartMusic()
+    {
+        if(_menuType == MenuType.MainMenu)
+        {
+            AudioManager.Instance.PlayMusic("ms_MainMenu");
+        }
+        else
+        {
+            AudioManager.Instance.PlayMusic("ms_Game");
+            AudioManager.Instance.PlayAmbient("Bubbles 1");
+        }
+    }
+
+    public void ReproducirPointerEnter()
     {
         if (isMouseVisible)
-            AudioManager.Instance.PlaySfx(FMODEvents.instance.ButtonSelect);
+            AudioManager.Instance.PlaySFX("sfx_ui_button");
     }
     public void ReproducirSelect()
     {
         if (!isMouseVisible)
-            AudioManager.Instance.PlaySfx(FMODEvents.instance.ButtonSelect);
+            AudioManager.Instance.PlaySFX("sfx_ui_button");
     }
     public void ReproducirSubmit()
     {
         if (!isMouseVisible)
-            AudioManager.Instance.PlaySfx(FMODEvents.instance.ButtonSubmit);
+            AudioManager.Instance.PlaySFX("sfx_ui_button_play");
     }
     public void ReproducirPointerClick()
     {
         if (isMouseVisible)
-            AudioManager.Instance.PlaySfx(FMODEvents.instance.ButtonSubmit);
-    }*/
+            AudioManager.Instance.PlaySFX("sfx_ui_button_play");
+    }
+
+    public void ReproducirReiniciar()
+    {
+        if (!isMouseVisible)
+            AudioManager.Instance.PlaySFX("sfx_ui_reiniciar");
+    }
+
+    public void PlayMusicGame()
+    {
+        AudioManager.Instance.PlayMusic("ms_Game");
+    }
     #endregion
 
 }

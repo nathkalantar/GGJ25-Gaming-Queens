@@ -510,15 +510,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2031217819893410198, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 878.0098
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2031217819893410198, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 540.4023
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2031217819893410198, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.684787
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2031217819893410198, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -548,10 +548,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2509841096189916178, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
-      propertyPath: audioMixer
-      value: 
-      objectReference: {fileID: 24100000, guid: 3216668c3654e9b4b8a77a9952b5eea8, type: 2}
     - target: {fileID: 6449846846511599610, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
       propertyPath: m_Name
       value: AudioManager
@@ -569,29 +565,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1823148282089409081, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2830166650926564743, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4281479730
-      objectReference: {fileID: 0}
     - target: {fileID: 4476444073023423284, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
       propertyPath: m_Name
       value: Main Menu
-      objectReference: {fileID: 0}
-    - target: {fileID: 4719952319305963550, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6488012233971595273, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4281479730
-      objectReference: {fileID: 0}
-    - target: {fileID: 7261825263754704573, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4281479730
       objectReference: {fileID: 0}
     - target: {fileID: 8270645927097094043, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
       propertyPath: m_Pivot.x
@@ -672,10 +648,6 @@ PrefabInstance:
     - target: {fileID: 8270645927097094043, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8905304126073896609, guid: 9cad2b8ce88347447ad584d9f261efff, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 4281479730
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

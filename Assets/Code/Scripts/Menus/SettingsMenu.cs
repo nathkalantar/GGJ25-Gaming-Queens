@@ -16,12 +16,11 @@ public class SettingsMenu : MonoBehaviour
     public Toggle vSyncToggle;
 
     [Header("Audio Settings")]
-    public Slider globalSlider; // Slider para el volumen de música
+    public Slider masterSlider; // Slider para el volumen de música
     public Slider musicSlider; // Slider para el volumen de música
     public Slider sfxSlider;   // Slider para el volumen de efectos de sonido
+    public Slider ambientSlider;   // Slider para el volumen de efectos de sonido
 
-
-    
     private Resolution[] availableResolutions;
 
     #endregion
@@ -30,6 +29,8 @@ public class SettingsMenu : MonoBehaviour
 
     private void Start()
     {
+        availableResolutions = Screen.resolutions;
+
         InitializeResolutionOptions();
         InitializeScreenModeOptions();
         InitializeFrameRateOptions();
@@ -61,6 +62,12 @@ public class SettingsMenu : MonoBehaviour
 
     private int GetCurrentResolutionIndex()
     {
+        if (availableResolutions == null || availableResolutions.Length == 0)
+        {
+            Debug.LogWarning("availableResolutions no está inicializado o no contiene resoluciones.");
+            return 0; // Valor predeterminado
+        }
+
         for (int i = 0; i < availableResolutions.Length; i++)
         {
             if (availableResolutions[i].width == Screen.currentResolution.width &&
@@ -70,7 +77,8 @@ public class SettingsMenu : MonoBehaviour
                 return i;
             }
         }
-        return 0; // Predeterminado
+
+        return 0; // Predeterminado si no se encuentra la resolución actual
     }
 
     private void InitializeScreenModeOptions()
@@ -132,7 +140,7 @@ public class SettingsMenu : MonoBehaviour
     }
     public void OnGlobalVolumeChanged(float sliderValue)
     {
-        AudioManager.Instance.SetGlobalVolume(sliderValue);
+        AudioManager.Instance.SetMasterVolume(sliderValue);
         GameManager.Instance.SaveSettings();
     }
 
@@ -150,7 +158,6 @@ public class SettingsMenu : MonoBehaviour
 
     private void LoadSettings()
     {
-        // Cargar configuraciones existentes al iniciar
         if (GameManager.Instance != null)
         {
             frameRateDropdown.value = GameManager.Instance.TargetFrameRate == -1
@@ -162,19 +169,47 @@ public class SettingsMenu : MonoBehaviour
             inputTypeDropdown.value = (int)GameManager.Instance.GetInputType();
             vSyncToggle.isOn = QualitySettings.vSyncCount > 0;
         }
+        else
+        {
+            Debug.LogError("GameManager.Instance es null. No se pueden cargar las configuraciones.");
+        }
     }
+
     public void InitializeAudioSettings()
     {
-        // Configurar sliders con los valores actuales del AudioManager
-        globalSlider.value = AudioManager.Instance.GetGlobalVolume();
-        musicSlider.value = AudioManager.Instance.GetMusicVolume();
-        sfxSlider.value = AudioManager.Instance.GetSFXVolume();
+         // Sincronizar sliders con los valores iniciales
+        masterSlider.value = AudioManager.Instance.masterVolume;
+        musicSlider.value = AudioManager.Instance.musicVolume;
+        sfxSlider.value = AudioManager.Instance.sfxVolume;
+        ambientSlider.value = AudioManager.Instance.ambientVolume;
 
-        // Listener para los sliders
-        globalSlider.onValueChanged.AddListener(OnGlobalVolumeChanged);
-        musicSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
-        sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
+        // Conectar sliders con el AudioManager
+        masterSlider.onValueChanged.AddListener((value) =>
+        {
+            AudioManager.Instance.SetMasterVolume(value);
+        });
+
+        musicSlider.onValueChanged.AddListener((value) =>
+        {
+            AudioManager.Instance.SetMusicVolume(value);
+        });
+
+        sfxSlider.onValueChanged.AddListener((value) =>
+        {
+            AudioManager.Instance.SetSFXVolume(value);
+        });
+        ambientSlider.onValueChanged.AddListener((value) =>
+        {
+            AudioManager.Instance.SetAmbientVolume(value);
+        });
     }
+
+    private void SaveVolumeSetting(string key, float value)
+    {
+        PlayerPrefs.SetFloat(key, value);
+        PlayerPrefs.Save();
+    }
+
 
 
     #endregion

@@ -152,9 +152,6 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("ResolutionHeight", CurrentResolution.height);
         PlayerPrefs.SetFloat("RefreshRate", (float)CurrentResolution.refreshRateRatio.value);
         PlayerPrefs.SetInt("InputType", (int)CurrentInputType);
-        PlayerPrefs.SetFloat("GlobalVolume", AudioManager.Instance.GetGlobalVolume());
-        PlayerPrefs.SetFloat("MusicVolume", AudioManager.Instance.GetMusicVolume());
-        PlayerPrefs.SetFloat("SFXVolume", AudioManager.Instance.GetSFXVolume());
         PlayerPrefs.Save();
         Debug.Log("Settings saved.");
     }

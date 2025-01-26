@@ -44,8 +44,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d0a2a1931286fa4ba47294c3fd824f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSourcePrefab: {fileID: 0}
-  audioClipDataList:
-  - {fileID: 11400000, guid: 549be72eb32e44b4a9c6f7164cdd559a, type: 2}
-  - {fileID: 11400000, guid: 7d7a527162f7ef64dac332b7b7a54e15, type: 2}
-  - {fileID: 11400000, guid: 6e33c2399736a0d44a8049216e87849c, type: 2}
+  musicClips:
+  - {fileID: 8300000, guid: 41f5dbb807113484d950f1c3d139310e, type: 3}
+  - {fileID: 8300000, guid: d122626639bd4ab46a8f662c4656e615, type: 3}
+  sfxClips:
+  - {fileID: 8300000, guid: 0734bdde20010c2488c3bec074e63496, type: 3}
+  - {fileID: 8300000, guid: ad596a0c9b299604ea9cf7240379086f, type: 3}
+  - {fileID: 8300000, guid: 1ef4f15a69e6d5c4086dc6c9e57c3dc3, type: 3}
+  ambientClips:
+  - {fileID: 8300000, guid: 6e189782b956f3845ab48e3941329a64, type: 3}
+  masterVolume: 1
+  musicVolume: 1
+  sfxVolume: 1
+  ambientVolume: 1
