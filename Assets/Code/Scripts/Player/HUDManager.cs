@@ -197,7 +197,7 @@ public class HUDManager : MonoBehaviour
     {
         if (dayText != null)
         {
-            dayText.text = $"Día {currentDay}";
+            dayText.text = $"Day {currentDay}";
             dayText.alpha = 0; // Asegurarse de que el texto esté invisible al inicio
 
             // Animación con DoTween
