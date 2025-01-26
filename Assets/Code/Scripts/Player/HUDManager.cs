@@ -125,6 +125,21 @@ public class HUDManager : MonoBehaviour
         // Actualizar textos de valores
         UpdateTextValues();
 
+        float averageStats = (health + happiness + imagination) / 3;
+
+        if (averageStats < 33)
+        {
+            playerAnimationController.SetState(0); // Sad
+        }
+        else if (averageStats >= 33 && averageStats < 66)
+        {
+            playerAnimationController.SetState(1); // Neutral
+        }
+        else
+        {
+            playerAnimationController.SetState(2); // Delulu
+        }
+
         // Verificar condiciones de fin de juego
         CheckGameEndings();
     }

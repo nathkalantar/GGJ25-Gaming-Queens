@@ -12,6 +12,12 @@ public class PlayerAnimationController : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
+    public void SetState(int state)
+    {
+        // Cambiar el parámetro State en el Animator
+        animator.SetInteger("State", state);
+    }
+
     public void PlayHealthAnimation()
     {
         animator.SetTrigger("PlayHealth");
