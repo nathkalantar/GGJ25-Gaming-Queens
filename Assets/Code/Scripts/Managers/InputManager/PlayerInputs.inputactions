@@ -190,6 +190,17 @@
                 },
                 {
                     "name": "",
+                    "id": "3197b7cb-2ecb-4a61-9325-23a7c4d715ea",
+                    "path": "<Touchscreen>/Press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mobile",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "ddcb3315-6b79-4a59-b8a4-e930ddfc7240",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
@@ -253,6 +264,17 @@
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cd40a588-3784-404f-ba7a-87f56d4b3651",
+                    "path": "<Touchscreen>/Press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mobile",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -272,7 +294,7 @@
                 {
                     "name": "Submit",
                     "type": "Button",
-                    "id": "397a55e8-5b80-4fbf-9ade-28823336126a",
+                    "id": "77fdf62f-fe43-4f0e-9108-18c20129baa5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -315,7 +337,7 @@
                 },
                 {
                     "name": "",
-                    "id": "e66f7d79-e897-4d40-8cb8-3f94f0f2d0d6",
+                    "id": "a1cbd621-e889-4a5f-917e-61673aa2a79a",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
@@ -326,7 +348,7 @@
                 },
                 {
                     "name": "",
-                    "id": "dca4b576-186b-481f-adec-f782b5ba47d0",
+                    "id": "29c81044-a6c9-4385-a002-92a0dab1d992",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
@@ -337,11 +359,22 @@
                 },
                 {
                     "name": "",
-                    "id": "b6a7fd66-3c21-41f2-ba85-f3cfe6f9fbd1",
+                    "id": "33e644e5-12f1-4946-9416-a270de3f33ea",
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;Automatic",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b283ae0b-1132-4468-ac56-b58a889443fe",
+                    "path": "<Touchscreen>/Press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mobile",
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false

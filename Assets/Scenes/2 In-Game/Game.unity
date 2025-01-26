@@ -753,8 +753,8 @@ Transform:
   m_GameObject: {fileID: 212076240}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: -3.019759}
-  m_LocalScale: {x: 1.1734797, y: 1.1734797, z: 1.1734797}
+  m_LocalPosition: {x: 0, y: 0, z: -3.019759}
+  m_LocalScale: {x: 0.965187, y: 0.895717, z: 1.1734797}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -3495,15 +3495,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: b8d8226d90837ef409cfa5e06a71f29d, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.2}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 19.2, y: 10.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1036908521
@@ -3515,9 +3515,9 @@ Transform:
   m_GameObject: {fileID: 1036908519}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: -3.019759}
-  m_LocalScale: {x: 1.1734797, y: 1.1734797, z: 1.1734797}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: -3.019759}
+  m_LocalScale: {x: 0.9218999, y: 0.90739995, z: 0.99999994}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4403,6 +4403,10 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2509841096189916178, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
+      propertyPath: musicClips.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2509841096189916178, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
       propertyPath: sfxClips.Array.data[3]
       value: 
       objectReference: {fileID: 8300000, guid: 0d6d702b3ef3852418c0e0b2904204ea, type: 3}
@@ -4410,6 +4414,10 @@ PrefabInstance:
       propertyPath: sfxClips.Array.data[4]
       value: 
       objectReference: {fileID: 8300000, guid: 1aa8a8dc5d4551541b11cb6060a115ed, type: 3}
+    - target: {fileID: 2509841096189916178, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
+      propertyPath: musicClips.Array.data[2]
+      value: 
+      objectReference: {fileID: 8300000, guid: 6a02cc2ee4403864a8442c01959d925f, type: 3}
     - target: {fileID: 6449846846511599610, guid: b4ed7323159378443b0a6b678044c35f, type: 3}
       propertyPath: m_Name
       value: AudioManager
@@ -7481,6 +7489,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6463430880711613117, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
+      propertyPath: panelBadEnding
+      value: 
+      objectReference: {fileID: 1250279889}
+    - target: {fileID: 6463430880711613117, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
+      propertyPath: panelEndingDelulu
+      value: 
+      objectReference: {fileID: 731466915}
     - target: {fileID: 6687121703551882141, guid: e7fe1ff1d616e0a46babbcf788d4d25c, type: 3}
       propertyPath: m_IsActive
       value: 0

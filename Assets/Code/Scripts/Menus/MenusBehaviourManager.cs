@@ -33,6 +33,10 @@ public class MenusBehaviourManager : MonoBehaviour
     private List<List<GameObject>> ButtonsMenus = new List<List<GameObject>>();
     private Dictionary<string, int> menuIndexLookup;
     private Dictionary<GameObject, GameObject> lastSelectedButtons = new Dictionary<GameObject, GameObject>();
+    public Animator AnimaticInicio;
+    public GameObject panelEndingDelulu;
+    public GameObject panelBadEnding;
+
 
     #endregion
 
@@ -86,6 +90,25 @@ public class MenusBehaviourManager : MonoBehaviour
 
     private void Start()
     {
+        // Verificar si AnimaticInicio está presente en la escena Game
+        if (SceneManager.GetActiveScene().name == "Game" && AnimaticInicio == null)
+        {
+            Debug.LogWarning("AnimaticInicio no encontrado en la escena Game. Ignorando animación de inicio.");
+        }
+
+        // Verificar si los paneles de finales están presentes en MainMenu_PC o MainMenu_WEB
+        if ((SceneManager.GetActiveScene().name == "MainMenu_PC" || SceneManager.GetActiveScene().name == "MainMenu_WEB"))
+        {
+            if (panelEndingDelulu == null)
+            {
+                Debug.LogWarning("PanelEndingDelulu no encontrado en la escena MainMenu. Ignorando.");
+            }
+
+            if (panelBadEnding == null)
+            {
+                Debug.LogWarning("PanelBadEnding no encontrado en la escena MainMenu. Ignorando.");
+            }
+        }
         LoadInputTypeFromGameManager(); // Cargar tipo de input desde el GameManager.
         ConfigureInputMode();
         LoadCloseBeginning();
@@ -143,6 +166,14 @@ public class MenusBehaviourManager : MonoBehaviour
     #region Pause Management
     private void HandlePause()
     {
+        // No permitir pausar si un panel de final está activo
+        if ((panelEndingDelulu != null && panelEndingDelulu.activeSelf) || 
+            (panelBadEnding != null && panelBadEnding.activeSelf))
+        {
+            Debug.Log("No se puede pausar el juego mientras un final está activo.");
+            return;
+        }
+
         if (InputManager.GetInstance().GetPausePressed() && _menuType == MenuType.PauseMenu)
         {
             if (GameManager.Instance.CurrentGameState == GameStates.Pause)
@@ -423,7 +454,7 @@ public class MenusBehaviourManager : MonoBehaviour
 
         if(_menuType == MenuType.MainMenu)
         {
-            MenuIgnition();
+            StartCoroutine(AnimationInicio());
             GameManager.Instance.CurrentGameState = GameStates.Pause;
 
         }
@@ -432,6 +463,28 @@ public class MenusBehaviourManager : MonoBehaviour
             GameManager.Instance.CurrentGameState = GameStates.Gameplay;
         }
     }
+    public IEnumerator AnimationInicio()
+    {
+        // Inicia la animación
+        AudioManager.Instance.StopAmbient();
+        AnimaticInicio.gameObject.SetActive(true);
+        AnimaticInicio.SetTrigger("StartAnimation");
+        AudioManager.Instance.PlayMusic("intro");
+        print("Inicio animación");
+        // Espera mientras la animación se está reproduciendo
+        while (AnimaticInicio.GetCurrentAnimatorStateInfo(0).normalizedTime < 1 && 
+               !AnimaticInicio.GetCurrentAnimatorStateInfo(0).IsName("Animatic"))
+        {
+            yield return null;
+        }
+
+        print("Terminó animación");
+        // Llama a la función deseada después de que termine la animación
+        AnimaticInicio.gameObject.SetActive(false);
+        MenuIgnition();
+        AudioManager.Instance.PlayMusic("ms_MainMenu");
+    }
+    
     private void MenuIgnition()
     {
         GameObject IgnitedMenu = Menus[0];
@@ -830,7 +883,7 @@ public class MenusBehaviourManager : MonoBehaviour
     {
         if(_menuType == MenuType.MainMenu)
         {
-            AudioManager.Instance.PlayMusic("ms_MainMenu");
+            
         }
         else
         {

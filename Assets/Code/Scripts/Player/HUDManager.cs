@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic; // Para usar TextMeshPro
 using DG.Tweening;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class HUDManager : MonoBehaviour
 {
@@ -245,27 +246,26 @@ public class HUDManager : MonoBehaviour
     private float DayDecreased(float Statvalue)
     {
         float multiplier = 1f;
-        switch (Day)
+
+        // Cada 5 días, incrementar el multiplicador en 2
+        if (Day % 5 == 0)
         {
-            case 1:
-                return Statvalue;
-            case 5:
-            multiplier = multiplier * 1.5f;
-                return Statvalue * multiplier;
-            case 10:
-            multiplier = multiplier * 2f;
-                return Statvalue * multiplier;
-            case 15:
-            multiplier = multiplier * 4f;
-                return Statvalue * multiplier;
-            case 20:
-            multiplier = multiplier * 5f;
-                return Statvalue * multiplier;
-            default:
-            multiplier = multiplier * 1.1f;
-                return Statvalue * multiplier;
+            multiplier += 2f; // Incremento adicional en los días divisibles por 5
         }
+        // El día posterior al incremento (día divisible por 5 + 1), restablecer el multiplicador
+        else if ((Day - 1) % 5 == 0)
+        {
+            multiplier = Mathf.Pow(1.2f, Day - 1); // Continuar con la progresión basada en el día anterior
+        }
+        else
+        {
+            // Progresión estándar exponencial
+            multiplier = Mathf.Pow(1.2f, Day);
+        }
+
+        return Statvalue * multiplier;
     }
+
     private void DaySituation()
     {
         // Configura el tiempo del temporizador y otros cambios según el día
@@ -284,17 +284,8 @@ public class HUDManager : MonoBehaviour
                 happinessBar.gameObject.SetActive(true); // Activa la barra de felicidad
                 countdown = 15f;
                 break;
-            case 4:
-                countdown = 15f;
-                break;
-            case 5:
-                countdown = 20f;
-                break;
-            case 6:
-                countdown = 20f;
-                break;
             default:
-                countdown = 25f; // Valor por defecto para días posteriores
+                countdown = 15f; // Valor por defecto para días posteriores
                 break;
         }
     }
@@ -423,19 +414,22 @@ public class HUDManager : MonoBehaviour
         int slidersAtMin = 0;
 
         // Verificar cuántos sliders están en su valor máximo y mínimo
-        if (Mathf.Approximately(health, maxStatValue)) slidersAtMax++;
-        if (Mathf.Approximately(happiness, maxStatValue)) slidersAtMax++;
-        if (Mathf.Approximately(imagination, maxStatValue)) slidersAtMax++;
+        if (health >= maxStatValue) slidersAtMax++;
+        if (happiness >= maxStatValue) slidersAtMax++;
+        if (imagination >= maxStatValue) slidersAtMax++;
 
-        if (Mathf.Approximately(health, minStatValue)) slidersAtMin++;
-        if (Mathf.Approximately(happiness, minStatValue)) slidersAtMin++;
-        if (Mathf.Approximately(imagination, minStatValue)) slidersAtMin++;
+        if (health <= minStatValue) slidersAtMin++;
+        if (happiness <= minStatValue) slidersAtMin++;
+        if (imagination <= minStatValue) slidersAtMin++;
 
         // Mostrar el panel de Delulu si 2 o más sliders están al máximo
         if (slidersAtMax >= 2 && panelEndingDelulu != null && !panelEndingDelulu.activeSelf)
         {
             panelEndingDelulu.SetActive(true);
             Debug.Log("Ending Delulu activado.");
+
+            // Seleccionar el primer botón del panel
+            SelectFirstButtonInPanel(panelEndingDelulu);
         }
 
         // Mostrar el panel de Bad Ending si 2 o más sliders están al mínimo
@@ -443,8 +437,35 @@ public class HUDManager : MonoBehaviour
         {
             panelBadEnding.SetActive(true);
             Debug.Log("Bad Ending activado.");
+
+            // Seleccionar el primer botón del panel
+            SelectFirstButtonInPanel(panelBadEnding);
         }
     }
+    private void SelectFirstButtonInPanel(GameObject panel)
+    {
+        if (panel == null)
+        {
+            Debug.LogWarning("El panel es nulo. No se puede seleccionar el botón.");
+            return;
+        }
+
+        Button[] buttons = panel.GetComponentsInChildren<Button>(true);
+        if (buttons.Length > 0)
+        {
+            GameObject firstButton = buttons[0].gameObject;
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(firstButton);
+            Debug.Log($"Primer botón seleccionado en el panel: {firstButton.name}");
+        }
+        else
+        {
+            Debug.LogWarning($"No se encontraron botones en el panel {panel.name}.");
+        }
+    }
+
+
+
 
 
 
