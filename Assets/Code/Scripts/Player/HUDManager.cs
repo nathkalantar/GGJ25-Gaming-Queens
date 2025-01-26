@@ -44,6 +44,8 @@ public class HUDManager : MonoBehaviour
     public List<Animator> btnAnimations = new List<Animator>();
 
     private PlayerPositions playerPositions;
+    private PlayerAnimationController playerAnimationController;
+
     public TextMeshProUGUI timerText;
 
     // Texto para el día actual
@@ -100,6 +102,7 @@ public class HUDManager : MonoBehaviour
 
         // Obtén la instancia del InputManager
         playerPositions = FindAnyObjectByType<PlayerPositions>();
+        playerAnimationController = FindAnyObjectByType<PlayerAnimationController>();
 
         // Actualizar textos iniciales
         UpdateTextValues();
@@ -291,6 +294,7 @@ public class HUDManager : MonoBehaviour
                 playerPositions.MoveToHealthPosition();
                 btnAnimations[1].SetTrigger("Pressed");
                 ShowFloatingText(healthBar.transform, "+1");
+                playerAnimationController.PlayHealthAnimation();
 
             }
             else if (moveDirection == Vector2.right && !isHappinessFrozen && btnAnimations[2].gameObject.activeSelf)
@@ -299,6 +303,7 @@ public class HUDManager : MonoBehaviour
                 playerPositions.MoveToHappinessPosition();
                 btnAnimations[2].SetTrigger("Pressed");
                 ShowFloatingText(happinessBar.transform, "+1");
+                playerAnimationController.PlayHappinessAnimation();
             }
             else if (moveDirection == Vector2.left && !isImaginationFrozen && btnAnimations[0].gameObject.activeSelf)
             {
@@ -306,6 +311,7 @@ public class HUDManager : MonoBehaviour
                 playerPositions.MoveToImaginationPosition();
                 btnAnimations[0].SetTrigger("Pressed");
                 ShowFloatingText(imaginationBar.transform, "+1");
+                playerAnimationController.PlayImaginationAnimation();
             }
         }
     }
@@ -378,20 +384,32 @@ public class HUDManager : MonoBehaviour
 
     private void CheckGameEndings()
     {
-        // Verificar si todas las barras están en 0
-        if (health == minStatValue && happiness == minStatValue && imagination == minStatValue)
+        int slidersAtMax = 0;
+        int slidersAtMin = 0;
+
+        // Verificar si las barras han alcanzado el máximo o mínimo
+        if (Mathf.Approximately(health, maxStatValue)) slidersAtMax++;
+        if (Mathf.Approximately(happiness, maxStatValue)) slidersAtMax++;
+        if (Mathf.Approximately(imagination, maxStatValue)) slidersAtMax++;
+
+        if (Mathf.Approximately(health, minStatValue)) slidersAtMin++;
+        if (Mathf.Approximately(happiness, minStatValue)) slidersAtMin++;
+        if (Mathf.Approximately(imagination, minStatValue)) slidersAtMin++;
+
+        // Mostrar el ending correspondiente
+        if (slidersAtMax >= 2 && panelEndingDelulu != null && !panelEndingDelulu.activeSelf)
         {
-            if (panelBadEnding != null)
-                panelBadEnding.SetActive(true);
+            panelEndingDelulu.SetActive(true);
+            Debug.Log("Ending Delulu activado.");
         }
 
-        // Verificar si todas las barras están en 100
-        if (health >= maxStatValue && happiness >= maxStatValue && imagination >= maxStatValue)
+        if (slidersAtMin >= 2 && panelBadEnding != null && !panelBadEnding.activeSelf)
         {
-            if (panelEndingDelulu != null)
-                panelEndingDelulu.SetActive(true);
+            panelBadEnding.SetActive(true);
+            Debug.Log("Bad Ending activado.");
         }
     }
+
 
     // Métodos para agregar valores a las barras
     public void AddHealth(float amount)
