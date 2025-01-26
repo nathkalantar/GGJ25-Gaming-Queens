@@ -8,6 +8,7 @@ public class Events : MonoBehaviour
     public GameObject healthIcon;         // Referencia al ícono de Health en la escena
     public GameObject happinessIcon;      // Referencia al ícono de Happiness en la escena
     public GameObject imaginationIcon;    // Referencia al ícono de Imagination en la escena
+    public GameObject arrowPrefab;        // Prefab de la flecha roja
 
     public HUDManager hudManager;         // Referencia al HUDManager
 
@@ -19,6 +20,13 @@ public class Events : MonoBehaviour
     public float iconStartScale = 0f;     // Escala inicial de los íconos
     public float iconEndScale = 0.8f;     // Escala final de los íconos
 
+    [Header("Flecha Roja")]
+    public float arrowOffsetY = 50f;      // Distancia hacia arriba para posicionar la flecha
+    public float arrowOffsetX = 0f;       // Offset en el eje X para ajustar horizontalmente la flecha
+    public float arrowStartScale = 0f;    // Escala inicial de la flecha roja
+    public float arrowEndScale = 1f;      // Escala final de la flecha roja
+
+    private GameObject currentArrow;      // Referencia a la flecha instanciada
     private bool eventInProgress = false;
 
     private void Start()
@@ -61,19 +69,22 @@ public class Events : MonoBehaviour
             dialogueBubble.transform.DOScale(dialogueEndScale, 0.5f).SetEase(Ease.OutBounce); // Escala final ajustada
         }
 
-        // Activar el ícono correspondiente con animación
+        // Activar el ícono correspondiente y añadir la flecha roja
         switch (selectedStat)
         {
             case "health":
                 ActivateIcon(healthIcon);
+                SpawnArrowAbove(hudManager.healthBar.transform); // Flecha sobre la barra de salud
                 hudManager.healthDecreaseSpeed *= 2; // Duplicar velocidad de disminución
                 break;
             case "happiness":
                 ActivateIcon(happinessIcon);
+                SpawnArrowAbove(hudManager.happinessBar.transform); // Flecha sobre la barra de felicidad
                 hudManager.happinessDecreaseSpeed *= 2; // Duplicar velocidad de disminución
                 break;
             case "imagination":
                 ActivateIcon(imaginationIcon);
+                SpawnArrowAbove(hudManager.imaginationBar.transform); // Flecha sobre la barra de imaginación
                 hudManager.imaginationDecreaseSpeed *= 2; // Duplicar velocidad de disminución
                 break;
         }
@@ -95,11 +106,12 @@ public class Events : MonoBehaviour
                 break;
         }
 
-        // Desactivar el globo de diálogo y los íconos
+        // Desactivar el globo de diálogo, los íconos y destruir la flecha roja
         if (dialogueBubble != null) dialogueBubble.SetActive(false);
         if (healthIcon != null) healthIcon.SetActive(false);
         if (happinessIcon != null) happinessIcon.SetActive(false);
         if (imaginationIcon != null) imaginationIcon.SetActive(false);
+        if (currentArrow != null) Destroy(currentArrow);
 
         eventInProgress = false;
         Debug.Log("Evento Bob Needy terminado.");
@@ -131,6 +143,25 @@ public class Events : MonoBehaviour
 
             // Ajustar escala final del ícono
             icon.transform.DOScale(iconEndScale, 0.5f).SetEase(Ease.OutBounce);
+        }
+    }
+
+    private void SpawnArrowAbove(Transform targetTransform)
+    {
+        if (arrowPrefab != null)
+        {
+            // Instanciar la flecha sobre el objeto de destino
+            currentArrow = Instantiate(arrowPrefab, targetTransform.position, Quaternion.identity, targetTransform);
+
+            // Ajustar la posición de la flecha con offsets en X y Y
+            Vector3 offset = new Vector3(arrowOffsetX, arrowOffsetY, 0);
+            currentArrow.transform.localPosition += offset;
+
+            // Ajustar la escala inicial de la flecha
+            currentArrow.transform.localScale = Vector3.one * arrowStartScale;
+
+            // Animación de escala con DoTween Pro
+            currentArrow.transform.DOScale(Vector3.one * arrowEndScale, 0.5f).SetEase(Ease.OutBounce);
         }
     }
 }
