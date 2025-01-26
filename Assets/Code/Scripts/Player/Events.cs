@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using DG.Tweening;
 
 public class Events : MonoBehaviour
 {
@@ -9,6 +10,14 @@ public class Events : MonoBehaviour
     public GameObject imaginationIcon;    // Referencia al ícono de Imagination en la escena
 
     public HUDManager hudManager;         // Referencia al HUDManager
+
+    [Header("Escala del Globo de Diálogo")]
+    public float dialogueStartScale = 0f; // Escala inicial del globo de diálogo
+    public float dialogueEndScale = 1.2f; // Escala final del globo de diálogo
+
+    [Header("Escala de los Íconos")]
+    public float iconStartScale = 0f;     // Escala inicial de los íconos
+    public float iconEndScale = 0.8f;     // Escala final de los íconos
 
     private bool eventInProgress = false;
 
@@ -44,13 +53,15 @@ public class Events : MonoBehaviour
         string selectedStat = SelectRandomStat();
         Debug.Log($"Evento Bob Needy: {selectedStat} seleccionado.");
 
-        // Activar el globo de diálogo
+        // Activar el globo de diálogo con animación
         if (dialogueBubble != null)
         {
             dialogueBubble.SetActive(true);
+            dialogueBubble.transform.localScale = Vector3.one * dialogueStartScale; // Escala inicial
+            dialogueBubble.transform.DOScale(dialogueEndScale, 0.5f).SetEase(Ease.OutBounce); // Escala final ajustada
         }
 
-        // Activar el ícono correspondiente sin modificar su posición
+        // Activar el ícono correspondiente con animación
         switch (selectedStat)
         {
             case "health":
@@ -116,7 +127,10 @@ public class Events : MonoBehaviour
         if (icon != null)
         {
             icon.SetActive(true);
-            // No modificar posición, ya que se mantiene la configuración de escena
+            icon.transform.localScale = Vector3.one * iconStartScale; // Escala inicial
+
+            // Ajustar escala final del ícono
+            icon.transform.DOScale(iconEndScale, 0.5f).SetEase(Ease.OutBounce);
         }
     }
 }

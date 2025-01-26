@@ -105,7 +105,7 @@ public class HUDManager : MonoBehaviour
 
         // Obtén la instancia del InputManager
         playerPositions = FindAnyObjectByType<PlayerPositions>();
-        playerAnimationController = FindAnyObjectByType<PlayerAnimationController>();
+        playerAnimationController = FindObjectOfType<PlayerAnimationController>();
 
         // Actualizar textos iniciales
         UpdateTextValues();

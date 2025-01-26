@@ -6388,6 +6388,10 @@ MonoBehaviour:
   happinessIcon: {fileID: 1653214244}
   imaginationIcon: {fileID: 388691107}
   hudManager: {fileID: 1327898295}
+  dialogueStartScale: 0
+  dialogueEndScale: 1
+  iconStartScale: 0
+  iconEndScale: 3.8
 --- !u!4 &1996615824
 Transform:
   m_ObjectHideFlags: 0
