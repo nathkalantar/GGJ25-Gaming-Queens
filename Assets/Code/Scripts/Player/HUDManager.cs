@@ -49,6 +49,14 @@ public class HUDManager : MonoBehaviour
 
     public TextMeshProUGUI timerText;
 
+    [Header("Botones para móviles")]
+    public Button healthButton; // Botón para la barra de salud
+    public Button happinessButton; // Botón para la barra de felicidad
+    public Button imaginationButton; // Botón para la barra de imaginación
+    public Button healthButton2; // Botón para la barra de salud
+    public Button happinessButton2; // Botón para la barra de felicidad
+    public Button imaginationButton2; // Botón para la barra de imaginación
+
     // Texto para el día actual
     public TextMeshProUGUI dayText;
     public float countdown;
@@ -60,7 +68,17 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
-        
+        #if UNITY_ANDROID
+        ConfigureMobileButtons();
+        #else
+        // Desactiva los botones si no es Android
+        if (healthButton != null) healthButton.gameObject.SetActive(false);
+        if (happinessButton != null) happinessButton.gameObject.SetActive(false);
+        if (imaginationButton != null) imaginationButton.gameObject.SetActive(false);
+        if (imaginationButton2 != null) imaginationButton2.gameObject.SetActive(false);
+        if (happinessButton2 != null) happinessButton2.gameObject.SetActive(false);
+        if (healthButton2 != null) healthButton2.gameObject.SetActive(false);
+        #endif
 
         happinessBar.gameObject.SetActive(false);
         imaginationBar.gameObject.SetActive(false);
@@ -503,5 +521,74 @@ public class HUDManager : MonoBehaviour
         {
             imagination += amount;
         }
+    }
+
+    private void ConfigureMobileButtons()
+    {
+        // Asegúrate de que los botones estén activos
+        if (healthButton != null && healthButton2 != null)
+        {
+            healthButton.gameObject.SetActive(true);
+            healthButton2.gameObject.SetActive(true);
+            healthButton.onClick.AddListener(() => HandleHealthInput());
+            healthButton2.onClick.AddListener(() => HandleImaginationInput());
+        }
+
+        if (happinessButton != null && happinessButton2 != null)
+        {
+            happinessButton.gameObject.SetActive(true);
+            happinessButton2.gameObject.SetActive(true);
+            happinessButton.onClick.AddListener(() => HandleHappinessInput());
+            happinessButton2.onClick.AddListener(() => HandleImaginationInput());
+        }
+
+        if (imaginationButton != null && imaginationButton2 != null)
+        {
+            imaginationButton.gameObject.SetActive(true);
+            imaginationButton.gameObject.SetActive(true);
+            imaginationButton.onClick.AddListener(() => HandleImaginationInput());
+            imaginationButton2.onClick.AddListener(() => HandleImaginationInput());
+        }
+    }
+
+    // Manejar el input para la barra de salud
+    private void HandleHealthInput()
+    {
+        if (!isHealthFrozen && health < maxStatValue)
+        {
+            health += 1;
+            ShowFloatingText(healthBar.transform, "+1");
+            Debug.Log("Input en barra de Salud");
+        }
+    }
+
+    // Manejar el input para la barra de felicidad
+    private void HandleHappinessInput()
+    {
+        if (!isHappinessFrozen && happiness < maxStatValue)
+        {
+            happiness += 1;
+            ShowFloatingText(happinessBar.transform, "+1");
+            Debug.Log("Input en barra de Felicidad");
+        }
+    }
+
+    // Manejar el input para la barra de imaginación
+    private void HandleImaginationInput()
+    {
+        if (!isImaginationFrozen && imagination < maxStatValue)
+        {
+            imagination += 1;
+            ShowFloatingText(imaginationBar.transform, "+1");
+            Debug.Log("Input en barra de Imaginación");
+        }
+    }
+
+    private void InitializeBars()
+    {
+        // Configura las barras y otras variables
+        if (healthBar != null) healthBar.maxValue = maxStatValue;
+        if (happinessBar != null) happinessBar.maxValue = maxStatValue;
+        if (imaginationBar != null) imaginationBar.maxValue = maxStatValue;
     }
 }

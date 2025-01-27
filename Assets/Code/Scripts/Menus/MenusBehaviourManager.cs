@@ -637,6 +637,10 @@ public class MenusBehaviourManager : MonoBehaviour
 
     private void EnsureButtonSelected()
     {
+        #if UNITY_ANDROID
+        // En móvil no seleccionamos automáticamente ningún botón
+        return;
+        #endif
         // En modo Mouse, deseleccionamos cualquier botón.
         if (localInputType == InputType.Mouse)
         {
