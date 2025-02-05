@@ -72,12 +72,13 @@ public class HUDManager : MonoBehaviour
         ConfigureMobileButtons();
         #else
         // Desactiva los botones si no es Android
-        if (healthButton != null) healthButton.gameObject.SetActive(false);
-        if (happinessButton != null) happinessButton.gameObject.SetActive(false);
-        if (imaginationButton != null) imaginationButton.gameObject.SetActive(false);
-        if (imaginationButton2 != null) imaginationButton2.gameObject.SetActive(false);
-        if (happinessButton2 != null) happinessButton2.gameObject.SetActive(false);
-        if (healthButton2 != null) healthButton2.gameObject.SetActive(false);
+        healthButton.gameObject.SetActive(true);
+        healthButton2.gameObject.SetActive(true);
+        happinessButton.gameObject.SetActive(false);
+        imaginationButton.gameObject.SetActive(false);
+        imaginationButton2.gameObject.SetActive(false);
+        happinessButton2.gameObject.SetActive(false);
+        
         #endif
 
         happinessBar.gameObject.SetActive(false);
@@ -85,6 +86,8 @@ public class HUDManager : MonoBehaviour
 
         btnAnimations[0].gameObject.SetActive(false);
         btnAnimations[2].gameObject.SetActive(false);
+        btnAnimations[3].gameObject.SetActive(false);
+        btnAnimations[4].gameObject.SetActive(false);
 
         countdown = 10f;
         DaySituation();
@@ -294,11 +297,17 @@ public class HUDManager : MonoBehaviour
                 break;
             case 2:
                 btnAnimations[0].gameObject.SetActive(true);
+                btnAnimations[3].gameObject.SetActive(true);
+                imaginationButton.gameObject.SetActive(true);
+                imaginationButton2.gameObject.SetActive(true);
                 imaginationBar.gameObject.SetActive(true); // Activa la barra de imaginación
                 countdown = 10f;
                 break;
             case 3:
                 btnAnimations[2].gameObject.SetActive(true);
+                btnAnimations[4].gameObject.SetActive(true);
+                happinessButton.gameObject.SetActive(true);
+                happinessButton2.gameObject.SetActive(true);
                 happinessBar.gameObject.SetActive(true); // Activa la barra de felicidad
                 countdown = 15f;
                 break;
@@ -382,6 +391,12 @@ public class HUDManager : MonoBehaviour
                 });
             }
         }
+    }
+
+    public void ReproducirAnimation(int boton)
+    {
+        btnAnimations[boton].SetTrigger("Pressed");
+        
     }
 
 
@@ -531,7 +546,7 @@ public class HUDManager : MonoBehaviour
             healthButton.gameObject.SetActive(true);
             healthButton2.gameObject.SetActive(true);
             healthButton.onClick.AddListener(() => HandleHealthInput());
-            healthButton2.onClick.AddListener(() => HandleImaginationInput());
+            healthButton2.onClick.AddListener(() => HandleHealthInput());
         }
 
         if (happinessButton != null && happinessButton2 != null)
@@ -539,7 +554,7 @@ public class HUDManager : MonoBehaviour
             happinessButton.gameObject.SetActive(true);
             happinessButton2.gameObject.SetActive(true);
             happinessButton.onClick.AddListener(() => HandleHappinessInput());
-            happinessButton2.onClick.AddListener(() => HandleImaginationInput());
+            happinessButton2.onClick.AddListener(() => HandleHappinessInput());
         }
 
         if (imaginationButton != null && imaginationButton2 != null)
@@ -556,9 +571,12 @@ public class HUDManager : MonoBehaviour
     {
         if (!isHealthFrozen && health < maxStatValue)
         {
+            AudioManager.Instance.PlaySFX("sfx_ui_page");
             health += 1;
+            playerPositions.MoveToHealthPosition();
             ShowFloatingText(healthBar.transform, "+1");
-            Debug.Log("Input en barra de Salud");
+            playerAnimationController.PlayHealthAnimation();
+            
         }
     }
 
@@ -567,9 +585,11 @@ public class HUDManager : MonoBehaviour
     {
         if (!isHappinessFrozen && happiness < maxStatValue)
         {
+            AudioManager.Instance.PlaySFX("sfx_ui_button");
             happiness += 1;
+            playerPositions.MoveToHappinessPosition();
             ShowFloatingText(happinessBar.transform, "+1");
-            Debug.Log("Input en barra de Felicidad");
+            playerAnimationController.PlayHappinessAnimation();
         }
     }
 
@@ -578,9 +598,11 @@ public class HUDManager : MonoBehaviour
     {
         if (!isImaginationFrozen && imagination < maxStatValue)
         {
+            AudioManager.Instance.PlaySFX("Sfx_UI");
             imagination += 1;
+            playerPositions.MoveToImaginationPosition();
             ShowFloatingText(imaginationBar.transform, "+1");
-            Debug.Log("Input en barra de Imaginación");
+            playerAnimationController.PlayImaginationAnimation();
         }
     }
 

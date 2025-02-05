@@ -264,17 +264,6 @@
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "cd40a588-3784-404f-ba7a-87f56d4b3651",
-                    "path": "<Touchscreen>/Press",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Mobile",
-                    "action": "Submit",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
@@ -364,17 +353,6 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;Automatic",
-                    "action": "Submit",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "b283ae0b-1132-4468-ac56-b58a889443fe",
-                    "path": "<Touchscreen>/Press",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Mobile",
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -774,17 +752,6 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;Automatic",
-                    "action": "Submit",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "5c389039-ec40-41ce-ac8b-80f232339f3a",
-                    "path": "<Touchscreen>/Press",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Mobile",
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false

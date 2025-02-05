@@ -5,10 +5,10 @@ public class BubbleScale : MonoBehaviour
     // Referencia al objeto Bubble
     public GameObject bubble;
 
-    // Valores máximos y mínimos de la escala
-    private const float maxScale = 2f;
-    private const float minScale = 0.4f;
-    private const float midScale = 0.93f; // Escala inicial y punto medio
+    // Valores mï¿½ximos y mï¿½nimos de la escala
+    private const float maxScale = 0.93f;
+    private const float minScale = 0.1f;
+    private const float midScale = 0.59f; // Escala inicial y punto medio
 
     // Referencias a las barras de stat
     public HUDManager hudManager;
