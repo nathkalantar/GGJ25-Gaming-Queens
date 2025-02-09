@@ -5,6 +5,7 @@ using System.Collections.Generic; // Para usar TextMeshPro
 using DG.Tweening;
 using System.Collections;
 using UnityEngine.EventSystems;
+using MoreMountains.Feedbacks;
 
 public class HUDManager : MonoBehaviour
 {
@@ -15,7 +16,9 @@ public class HUDManager : MonoBehaviour
     private const int maxStatValue = 100;
     private const int minStatValue = 0;
 
+    public MMFeedbacks ScaleFeedback;
     // Valores actuales de las barras
+
     public float health = 50;
     public float happiness = 50;
     public float imagination = 50;
@@ -344,6 +347,7 @@ public class HUDManager : MonoBehaviour
                 btnAnimations[1].SetTrigger("Pressed");
                 ShowFloatingText(healthBar.transform, "+1");
                 playerAnimationController.PlayHealthAnimation();
+                ScaleFeedback.PlayFeedbacks();
 
             }
             else if (moveDirection == Vector2.right && !isHappinessFrozen && btnAnimations[2].gameObject.activeSelf)
@@ -354,6 +358,7 @@ public class HUDManager : MonoBehaviour
                 btnAnimations[2].SetTrigger("Pressed");
                 ShowFloatingText(happinessBar.transform, "+1");
                 playerAnimationController.PlayHappinessAnimation();
+                ScaleFeedback.PlayFeedbacks();
             }
             else if (moveDirection == Vector2.left && !isImaginationFrozen && btnAnimations[0].gameObject.activeSelf)
             {
@@ -363,6 +368,7 @@ public class HUDManager : MonoBehaviour
                 btnAnimations[0].SetTrigger("Pressed");
                 ShowFloatingText(imaginationBar.transform, "+1");
                 playerAnimationController.PlayImaginationAnimation();
+                ScaleFeedback.PlayFeedbacks();
             }
         }
     }
